@@ -34,22 +34,52 @@ def get_all_substrings(input_string):
 sequences = OrderedDict()
 #seq_kmers = dict()
 
-with open(inputfile,'r') as f:
-    seq = ""
-    sname = ""
-    for line in f:
-        line = line.strip()
-        if line.startswith(">"):
-            if sname: sequences[sname] = ""
-            if seq:
-                sequences[sname] = seq
-                seq = ""
-            sname = line[1:]
-        else:
-            seq += line
+is_fastq = False
 
-assert sname and seq
-sequences[sname] = seq
+
+with open(inputfile,'r') as f:
+    for line in f:
+        if line.startswith(">"): break
+        elif line.startswith("@"):
+            is_fastq = True
+            break
+
+
+
+with open(inputfile,'r') as f:
+    if not is_fastq:
+        seq = ""
+        sname = ""
+        for line in f:
+            line = line.strip()
+            if line.startswith(">"):
+                if sname: sequences[sname] = ""
+                if seq:
+                    sequences[sname] = seq
+                    seq = ""
+                sname = line[1:]
+            else:
+                seq += line
+
+        assert sname and seq
+        sequences[sname] = seq
+
+    else: #process fastq file
+        seq = ""
+        sname = ""
+        for line in f:
+            line = line.strip()
+            if line.startswith("@"):
+                sname = line[1:].split()[0]
+            elif line.startswith("+"):
+                if seq:
+                    sequences[sname] = seq
+                    seq = ""
+            else:
+                if sname not in sequences: seq = line
+
+
+#print sequences.keys()[0] + "="+ sequences.values()[0]
 
 print "Number of sequences in " + inputfile + " = "+ str(len(sequences))
 kmerlist = dict()
