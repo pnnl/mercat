@@ -15,6 +15,7 @@ import sys
 import re
 import os
 import glob
+import timeit
 import pandas as pd
 from collections import OrderedDict
 from joblib import Parallel, delayed
@@ -39,9 +40,10 @@ is_fastq = False
 
 import psutil
 num_cores = psutil.cpu_count(logical=False)
-print "no of cores = " + str(num_cores)
+#print "no of cores = " + str(num_cores)
 num_cores = 1
 
+start_time = timeit.default_timer()
 
 
 with open(inputfile,'r') as f:
@@ -132,10 +134,6 @@ for k,v in kmerlist.items():
 
 df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
 
-# import csv
-# with open(bif+'.csv', 'wb') as csv_file:
-#     writer = csv.writer(csv_file)
-#     for key, value in kmerlist.items():
-#        writer.writerow([key, value])
+print "Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
 
 
