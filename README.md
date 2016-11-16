@@ -1,5 +1,5 @@
-Mercat: Python code for k-mer counting.
-=======================================
+Mercat: Python code for Parallel k-mer counting
+================================================
   
 >Usage: python mercat.py path-to-input-file kmer-value   
 Example: To compute all 2-mers -> python mercat.py test.faa 2  
@@ -19,5 +19,4 @@ Mercat needs the following python libraries:
 
 Current Limitations
 --------------------
-- Single thread version 
 - Mercat only works with 1 input file at a time.

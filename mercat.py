@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""mercat.py: Python code for k-mer counting."""
+"""mercat.py: Python code for Parallel k-mer counting."""
 """Usage: python mercat.py path-to-input-file kmer-value """
 """Example: To compute all 2-mers -> python mercat.py test.faa 2"""
 """Results are stored in input-file-name.csv and input-file-name_summary.csv
@@ -20,11 +20,11 @@ import pandas as pd
 from collections import OrderedDict
 from joblib import Parallel, delayed
 
+
 inputfile = sys.argv[1]
 kmer = int(sys.argv[2])
 
 bif = os.path.splitext(os.path.basename(inputfile))[0]
-#print bif
 
 def get_all_substrings(input_string):
     length = len(input_string)
@@ -34,14 +34,12 @@ def get_all_substrings(input_string):
 # ipfiles.extend(glob.glob("*.fa"))
 
 sequences = OrderedDict()
-#seq_kmers = dict()
-
 is_fastq = False
 
 import psutil
 num_cores = psutil.cpu_count(logical=False)
-#print "no of cores = " + str(num_cores)
-num_cores = 1
+print "Running mercat using " + str(num_cores) + " cores"
+#num_cores = 1
 
 start_time = timeit.default_timer()
 
@@ -91,11 +89,10 @@ with open(inputfile,'r') as f:
 #print sequences.keys()[0] + "="+ sequences.values()[0]
 
 print "Number of sequences in " + inputfile + " = "+ str(len(sequences))
-kmerlist = dict()
-kmerlist_all_seq = dict()
-
 
 def calculateKmerCount(seq):
+    kmerlist = dict()
+    kmerlist_all_seq = dict()
     cseq = sequences[seq] #Get current sequence
     sslist = get_all_substrings(cseq) # get all substrings of current sequence
     kmerlist_all_seq[seq] = dict() #kmer count for each substring of current sequence
@@ -107,10 +104,30 @@ def calculateKmerCount(seq):
         kmerlist[ss] += count #global kmer count for substring ss
         kmerlist_all_seq[seq][ss] = count #kmer count for substring in current sequence
 
+    return [kmerlist,kmerlist_all_seq]
+
 results = Parallel(n_jobs=num_cores)(
     delayed(calculateKmerCount)(seq) for seq in sequences)
 
-#print kmerlist
+kmerlist = dict()
+kmerlist_all_seq = dict()
+
+for d in results:
+    for k,v in d[0].iteritems():
+        if k in kmerlist:
+            kmerlist[k] += v
+        else: kmerlist[k] = v
+
+for d in results:
+    for seq,kdict in d[1].iteritems():
+        assert seq not in kmerlist_all_seq
+        kmerlist_all_seq[seq] = kdict.copy()
+
+df = pd.DataFrame(0,index=kmerlist.keys(),columns=[bif])
+for k,v in kmerlist.items():
+    df.set_value(k,bif,v)
+
+df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
 
 dfcol = kmerlist.keys()
 dfcol.extend(["length","GC","AT"])
@@ -128,12 +145,12 @@ for seq in sequences:
 
 df.to_csv(bif+".csv",index_label='Sequence',index=True)
 
-df = pd.DataFrame(0,index=kmerlist.keys(),columns=[bif])
-for k,v in kmerlist.items():
-    df.set_value(k,bif,v)
-
-df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
-
 print "Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
 
+
+#Debug
+# sname = '515620.EUBELI_01521'
+# print df.loc[sname,"length"]
+# print df.loc[sname,"GC"]
+# print df.loc[sname,"AT"]
 
