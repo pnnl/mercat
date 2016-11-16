@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 """mercat.py: Python code for Parallel k-mer counting."""
-"""Usage: python mercat.py path-to-input-file kmer-value """
-"""Example: To compute all 2-mers -> python mercat.py test.faa 2"""
+"""Usage: python mercat.py path-to-input-file kmer-value [no-of-cores] """
+"""Example: To compute all 2-mers:
+            python mercat.py test.faa 2 (uses all available cores)
+            python mercat.py test.faa 2 8 (uses 8 cores)"""
 """Results are stored in input-file-name.csv and input-file-name_summary.csv
    (test.csv and test_summary.csv in the above example)"""
 """test.csv contains kmer count for kmers in individual sequences
@@ -15,6 +17,7 @@ import sys
 import re
 import os
 import glob
+import psutil
 import timeit
 import pandas as pd
 from collections import OrderedDict
@@ -23,6 +26,15 @@ from joblib import Parallel, delayed
 
 inputfile = sys.argv[1]
 kmer = int(sys.argv[2])
+
+num_cores = 1
+
+try:
+    num_cores = int(sys.argv[3])
+except:
+    num_cores = psutil.cpu_count(logical=False)
+
+print "Running mercat using " + str(num_cores) + " cores"
 
 bif = os.path.splitext(os.path.basename(inputfile))[0]
 
@@ -35,11 +47,6 @@ def get_all_substrings(input_string):
 
 sequences = OrderedDict()
 is_fastq = False
-
-import psutil
-num_cores = psutil.cpu_count(logical=False)
-print "Running mercat using " + str(num_cores) + " cores"
-#num_cores = 1
 
 start_time = timeit.default_timer()
 
