@@ -17,6 +17,7 @@ import os
 import glob
 import pandas as pd
 from collections import OrderedDict
+from joblib import Parallel, delayed
 
 inputfile = sys.argv[1]
 kmer = int(sys.argv[2])
@@ -35,6 +36,12 @@ sequences = OrderedDict()
 #seq_kmers = dict()
 
 is_fastq = False
+
+import psutil
+num_cores = psutil.cpu_count(logical=False)
+print "no of cores = " + str(num_cores)
+num_cores = 1
+
 
 
 with open(inputfile,'r') as f:
@@ -86,8 +93,7 @@ kmerlist = dict()
 kmerlist_all_seq = dict()
 
 
-
-for seq in sequences:
+def calculateKmerCount(seq):
     cseq = sequences[seq] #Get current sequence
     sslist = get_all_substrings(cseq) # get all substrings of current sequence
     kmerlist_all_seq[seq] = dict() #kmer count for each substring of current sequence
@@ -98,6 +104,9 @@ for seq in sequences:
         count = len(re.findall(r'(?=(%s))' % re.escape(ss), cseq))
         kmerlist[ss] += count #global kmer count for substring ss
         kmerlist_all_seq[seq][ss] = count #kmer count for substring in current sequence
+
+results = Parallel(n_jobs=num_cores)(
+    delayed(calculateKmerCount)(seq) for seq in sequences)
 
 #print kmerlist
 
