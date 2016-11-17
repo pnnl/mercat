@@ -23,3 +23,9 @@ Mercat needs the following python libraries:
 Current Limitations
 --------------------
 - Mercat only works with 1 input file at a time.
+- 
+
+To-do
+flag for limiting the count of kmers for example 10 counts
+multiple file summary
+
