@@ -19,6 +19,7 @@ import os
 import glob
 import psutil
 import timeit
+import humanize
 import pandas as pd
 from collections import OrderedDict
 from joblib import Parallel, delayed
@@ -53,6 +54,7 @@ def get_all_substrings(input_string):
 
 sequences = OrderedDict()
 is_fastq = False
+kmerstring = str(kmer)+"-mers"
 
 start_time = timeit.default_timer()
 
@@ -101,7 +103,7 @@ with open(inputfile,'r') as f:
 
 #print sequences.keys()[0] + "="+ sequences.values()[0]
 
-print "Number of sequences in " + inputfile + " = "+ str(len(sequences))
+print "Number of sequences in " + inputfile + " = "+ str(humanize.intword(len(sequences)))
 
 def calculateKmerCount(seq):
     kmerlist = dict()
@@ -137,11 +139,14 @@ for d in results:
         #assert seq not in kmerlist_all_seq
         kmerlist_all_seq[seq] = kdict.copy()
 
-print "Time to compute kmers: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
+print "Time to compute " + kmerstring +  ": " + str(round(timeit.default_timer() - start_time,2)) + " secs"
 
 significant_kmers = []
 for k in kmerlist:
     if kmerlist[k] >= prune_kmer: significant_kmers.append(k)
+
+print "Total number of " + kmerstring +  " found: " + str(humanize.intword(len(kmerlist)))
+print kmerstring +  " with count >= " + str(prune_kmer) + ": " + str(humanize.intword(len(significant_kmers)))
 
 #df = df.ix[df[bif] >= prune_kmer]
 
