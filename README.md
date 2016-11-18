@@ -1,7 +1,7 @@
 Mercat: Python code for Parallel k-mer counting
 ================================================
   
-Usage: python mercat.py -i path-to-input-file -k kmer-value [-n no-of-cores] [-c kmer-min-count]
+Usage: python mercat.py -i path-to-input-file -k kmer-length [-n no-of-cores] [-c kmer-min-count]
 > Example: To compute all 3-mers:
             python mercat.py -i test.fa -k 3 -n 8 -c 10
             

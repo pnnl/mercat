@@ -39,9 +39,9 @@ def parseargs(argv=None):
     num_cores = psutil.cpu_count(logical=False)
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('-i', type=str, required = True, help='path-to-input-file')
-    parser.add_argument('-k', type=int, required = True, help='kmers to find') #kmer
-    parser.add_argument('-n', type=int, default=num_cores, help='no of cores')  # no of cores to use
-    parser.add_argument('-c', type=int, default=10, help='min kmer count')  # kmer count cutoff value
+    parser.add_argument('-k', type=int, required = True, help='kmer length')
+    parser.add_argument('-n', type=int, default=num_cores, help='no of cores [default = all]')  # no of cores to use
+    parser.add_argument('-c', type=int, default=10, help='minimum kmer count [default = 10]')  # minimum kmer count to report
 
     # Process arguments
     args = parser.parse_args()
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
 
     dfcol = significant_kmers
-    dfcol.extend(["length","GC","AT"])
+    dfcol.extend(["length","GC_Percent","AT_Percent"])
 
     df = pd.DataFrame(0,index=sequences.keys(),columns=dfcol)
 
@@ -184,8 +184,8 @@ if __name__ == "__main__":
         cseq = sequences[seq]
         len_cseq = float(len(cseq))
         df.set_value(seq, "length", int(len_cseq))
-        df.set_value(seq, "GC", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
-        df.set_value(seq, "AT", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
+        df.set_value(seq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
+        df.set_value(seq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
         for ss in kmerlist_all_seq[seq]:
             df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
