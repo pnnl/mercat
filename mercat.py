@@ -28,11 +28,17 @@ inputfile = sys.argv[1]
 kmer = int(sys.argv[2])
 
 num_cores = 1
+prune_kmer = 10 #remove all kmers whose count is < 10
 
 try:
     num_cores = int(sys.argv[3])
 except:
     num_cores = psutil.cpu_count(logical=False)
+
+try:
+    prune_kmer = int(sys.argv[4])
+except:
+    prune_kmer = 10
 
 print "Running mercat using " + str(num_cores) + " cores"
 
@@ -106,10 +112,11 @@ def calculateKmerCount(seq):
     #print sslist
     for ss in sslist:
         if ss not in kmerlist: kmerlist[ss] = 0 #global kmer count for substring ss
-        if ss not in kmerlist_all_seq[seq]: kmerlist_all_seq[seq][ss] = 0 #kmer count for substring in current sequence
         count = len(re.findall(r'(?=(%s))' % re.escape(ss), cseq))
         kmerlist[ss] += count #global kmer count for substring ss
-        kmerlist_all_seq[seq][ss] = count #kmer count for substring in current sequence
+        if count >= prune_kmer:
+            #if ss not in kmerlist_all_seq[seq]: kmerlist_all_seq[seq][ss] = 0  # kmer count for substring in current sequence
+            kmerlist_all_seq[seq][ss] = count #kmer count for substring in current sequence
 
     return [kmerlist,kmerlist_all_seq]
 
@@ -127,16 +134,23 @@ for d in results:
 
 for d in results:
     for seq,kdict in d[1].iteritems():
-        assert seq not in kmerlist_all_seq
+        #assert seq not in kmerlist_all_seq
         kmerlist_all_seq[seq] = kdict.copy()
 
-df = pd.DataFrame(0,index=kmerlist.keys(),columns=[bif])
-for k,v in kmerlist.items():
-    df.set_value(k,bif,v)
+print "Time to compute kmers: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
 
+significant_kmers = []
+for k in kmerlist:
+    if kmerlist[k] >= prune_kmer: significant_kmers.append(k)
+
+#df = df.ix[df[bif] >= prune_kmer]
+
+df = pd.DataFrame(0,index=significant_kmers,columns=[bif])
+for k in significant_kmers:
+    df.set_value(k,bif,kmerlist[k])
 df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
 
-dfcol = kmerlist.keys()
+dfcol = significant_kmers
 dfcol.extend(["length","GC","AT"])
 
 df = pd.DataFrame(0,index=sequences.keys(),columns=dfcol)
@@ -150,6 +164,7 @@ for seq in sequences:
     for ss in kmerlist_all_seq[seq]:
         df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
+df = df.loc[:,df.max() >= prune_kmer]
 df.to_csv(bif+".csv",index_label='Sequence',index=True)
 
 print "Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
