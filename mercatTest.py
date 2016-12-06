@@ -219,8 +219,10 @@ if __name__ == "__main__":
 
     df = []
 
+    spec3 = ["length", "GC_Percent", "AT_Percent"]
+
     if max_rows and max_cols:
-        dfcol.extend(["length", "GC_Percent", "AT_Percent"])
+        dfcol.extend(spec3)
         df = pd.DataFrame(0,index=dfindex,columns=dfcol)
 
     else:
@@ -266,7 +268,7 @@ if __name__ == "__main__":
     cur_row_c = max_rc
     ddf = []
     df = getDFFilter(max_rows,max_rc,0,dfindex)
-    print df.index
+    #print df.index
 
     while(prev_row_c < num_rows):
         for seq in sequences:
@@ -284,15 +286,16 @@ if __name__ == "__main__":
     #ddf.set_index(daskdf.index,sorted=True)
     #delc = (daskdf[:]).compute()
     #print delc
-    #print (daskdf.columns[:5])
+    #print (daskdf.columns)
 
+    minsumReq = num_rows * (prune_kmer-1)
     for c in daskdf.columns:
          delc = (daskdf[c] >= 10).sum().compute()
-         if delc < num_rows * prune_kmer: print "sum=" + str(delc)
-         else: ddf.assign(c=daskdf[c])
-         break
+         if (delc > minsumReq) or c in spec3: #print "sum=" + str(delc)
+             ddf = eval("ddf.assign("+c+"=daskdf[c])")
 
-    #daskdf = daskdf.apply(daskdf.max() >= 10, axis=1)
+
+             #daskdf = daskdf.apply(daskdf.max() >= 10, axis=1)
     ddf.to_csv("./"+bif+"_dask*.csv",index_label='Sequence',name_function=name) #,index=True)
 
 
