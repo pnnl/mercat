@@ -290,7 +290,8 @@ if __name__ == "__main__":
 
     minsumReq = num_rows * (prune_kmer-1)
     for c in daskdf.columns:
-         delc = (daskdf[c] >= 10).sum().compute()
+         #delc = (daskdf[c] >= 10).sum().compute()
+         delc = (daskdf[c]).sum().compute()
          if (delc > minsumReq) or c in spec3: #print "sum=" + str(delc)
              ddf = eval("ddf.assign("+c+"=daskdf[c])")
 
