@@ -20,9 +20,11 @@ import psutil
 import timeit
 import humanize
 import pandas as pd
+from collections import defaultdict
 from collections import OrderedDict
 from joblib import Parallel, delayed
 
+from time import perf_counter as pc
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
@@ -145,25 +147,27 @@ if __name__ == "__main__":
     results = Parallel(n_jobs=num_cores)(
         delayed(calculateKmerCount)(seq, sequences[seq], prune_kmer) for seq in sequences)
 
-    kmerlist = dict()
+    kmerlist = defaultdict(int)
     kmerlist_all_seq = dict()
 
     for d in results:
         for k,v in d[0].items():
-            if k in kmerlist:
-                kmerlist[k] += v
-            else: kmerlist[k] = v
+            kmerlist[k] += v
+            # if k in kmerlist:
+            #     kmerlist[k] += v
+            # else: kmerlist[k] = v
 
     for d in results:
         for seq,kdict in d[1].items():
             #assert seq not in kmerlist_all_seq
-            kmerlist_all_seq[seq] = kdict.copy()
+            kmerlist_all_seq[seq] = kdict
 
     print("Time to compute " + kmerstring +  ": " + str(round(timeit.default_timer() - start_time,2)) + " secs")
 
-    significant_kmers = []
-    for k in kmerlist:
-        if kmerlist[k] >= prune_kmer: significant_kmers.append(k)
+    # for k in kmerlist:
+    #     if kmerlist[k] >= prune_kmer: significant_kmers.append(k)
+
+    significant_kmers = [k for k, v in kmerlist.items() if v >= prune_kmer]
 
     print("Total number of " + kmerstring +  " found: " + str(humanize.intword(len(kmerlist))))
     print(kmerstring +  " with count >= " + str(prune_kmer) + ": " + str(humanize.intword(len(significant_kmers))))

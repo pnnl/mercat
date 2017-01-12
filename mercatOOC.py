@@ -77,15 +77,22 @@ def calculateKmerCount(seq,cseq, prune_kmer):
     return [kmerlist,kmerlist_all_seq]
 
 
-def getDF(max_rows,max_cols,max_rc,prev_row_c,prev_col_c,dfindex,dfcol):
+def getDF(max_rows,max_cols,cur_row_c,prev_row_c,cur_col_c,prev_col_c,dfindex,dfcol):
     df = []
-    if max_rows:
-        df = pd.DataFrame(0, index=dfindex, columns=dfcol[prev_col_c:max_rc])
+    if max_rows and max_cols:
+        max_r = min(cur_row_c, len(dfindex)+1)
+        if not "length" in dfcol: dfcol.extend(["length", "GC_Percent", "AT_Percent"])
+        max_c = min(cur_col_c, len(dfcol) + 1)
+        df = pd.DataFrame(0, index=dfindex[prev_row_c:max_r], columns=dfcol[prev_col_c:max_c])
+    elif max_rows:
+        max_rc = min(cur_row_c, len(dfindex))
+        df = pd.DataFrame(0, index=dfindex[prev_row_c:max_rc], columns=dfcol[prev_col_c:cur_col_c])
     elif max_cols:
-        dfcol.extend(["length", "GC_Percent", "AT_Percent"])
-        df = pd.DataFrame(0, index=dfindex[prev_row_c:max_rc], columns=dfcol)
+        if not "length" in dfcol: dfcol.extend(["length", "GC_Percent", "AT_Percent"])
+        max_c = min(cur_col_c, len(dfcol) + 1)
+        df = pd.DataFrame(0, index=dfindex[prev_row_c:cur_row_c], columns=dfcol[prev_col_c:max_c])
     else:
-        df = pd.DataFrame(0, index=dfindex[prev_row_c:max_rc], columns=dfcol[prev_col_c:max_rc])
+        df = pd.DataFrame(0, index=dfindex[prev_row_c:cur_row_c], columns=dfcol[prev_col_c:cur_col_c])
 
     return df
 
@@ -94,7 +101,8 @@ def getDF(max_rows,max_cols,max_rc,prev_row_c,prev_col_c,dfindex,dfcol):
 def getDFFilter(max_rows,max_rc,prev_row_c,dfindex):
     df = []
     if max_rows:
-        df = pd.DataFrame(0, index=dfindex, columns=[])
+        max_rc = min(max_rc, len(dfindex) + 1)
+        df = pd.DataFrame(0, index=dfindex[prev_row_c:max_rc], columns=[])
     else:
         df = pd.DataFrame(0, index=dfindex[prev_row_c:max_rc], columns=[])
 
@@ -213,52 +221,88 @@ if __name__ == "__main__":
     num_rows = len(dfindex)
     num_cols = len(dfcol) + 3
 
-    max_rc = 10000
-    max_rows = num_rows < max_rc
+    max_rc = 500
+    max_rows = num_rows < 10000
     max_cols = num_cols < max_rc
 
     df = []
 
     spec3 = ["length", "GC_Percent", "AT_Percent"]
 
+
+    dfindexDict = OrderedDict()
+    dfi = 0
+    for i in dfindex:
+        dfindexDict[i] = dfi
+        dfi += 1
+
+    dfindex = range(0,num_rows)
+
     if max_rows and max_cols:
         dfcol.extend(spec3)
         df = pd.DataFrame(0,index=dfindex,columns=dfcol)
 
     else:
-        df = getDF(max_rows,max_cols,max_rc,0,dfindex,dfcol)
+        df = getDF(max_rows,max_cols,10000,0,max_rc,0,dfindex,dfcol)
 
 
     assert not df.empty
 
-    cur_row_c = max_rc
+    cur_row_c = 10000
+    cur_col_c = max_rc
 
-    print df.shape
+    print "Intial df = " + str(df.shape)
 
     prev_row_c = 0
+    prev_col_c = 0
 
-    cs = 1000
+    cs = 100
 
     daskdf = []
 
-    while(prev_row_c < num_rows):
+    #prev_col_c = num_cols
+    while (prev_row_c < num_rows or prev_col_c < num_cols):
+        print "Test1 = " + str(df.shape)
         for seq in sequences:
+            iseq = dfindexDict[seq]
+            if iseq not in df.index: continue
             prev_row_c += 1
             cseq = sequences[seq]
             if "length" in df.columns:
                 len_cseq = float(len(cseq))
-                df.set_value(seq, "length", int(len_cseq))
-                df.set_value(seq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
-                df.set_value(seq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
+                df.set_value(iseq, "length", int(len_cseq))
+                df.set_value(iseq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
+                df.set_value(iseq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
             for ss in kmerlist_all_seq[seq]: #slow - checks even inserted kmer counts when next df is called
                 if ss in df.columns:
-                    df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
+                    df.set_value(iseq, ss, kmerlist_all_seq[seq][ss])
 
             if prev_row_c == cur_row_c or prev_row_c == num_rows:
-                cur_row_c += max_rc
+                #print "Test = " + str(df.shape)
+                cur_row_c += 10000
+                colf = (prev_col_c+len(df.columns)) < num_cols
                 if not daskdf: daskdf = dd.from_pandas(df, chunksize=(cs))
-                else: daskdf = daskdf.append(df)
-                df = getDF(num_rows<cur_row_c,num_cols<max_rc,cur_row_c,prev_row_c,0,dfindex,dfcol)
+                else:
+                    if colf or prev_col_c < num_cols:
+                        daskdf = daskdf.merge(df,how='outer')
+                        #print daskdf.shape
+                    else:
+                        #print str(cur_row_c) + ":" + str(prev_row_c)
+                        #print str(cur_col_c) + ":" + str(prev_col_c)
+                        daskdf = daskdf.append(df)
+
+                if cur_row_c-max_rc < num_rows or colf:
+                    if colf:
+                        prev_col_c = cur_col_c
+                        cur_col_c += max_rc
+                        prev_row_c = 0
+                        cur_row_c = 10000
+                        df = getDF(num_rows<cur_row_c,num_cols<cur_col_c,cur_row_c,prev_row_c,cur_col_c,prev_col_c,dfindex,dfcol)
+                    else:
+                        prev_col_c = num_cols
+                        df = getDF(num_rows<cur_row_c,num_cols<cur_col_c,cur_row_c,prev_row_c,0,0,dfindex,dfcol)
+                else: prev_col_c = num_cols
+
                 break
 
 
@@ -276,7 +320,8 @@ if __name__ == "__main__":
             if prev_row_c == cur_row_c or prev_row_c == num_rows:
                 cur_row_c += max_rc
                 if not ddf: ddf = dd.from_pandas(df, chunksize=(cs))
-                else: ddf = ddf.append(df)
+                else:
+                    ddf = ddf.append(df)
                 df = getDFFilter(num_rows<cur_row_c,cur_row_c,prev_row_c,dfindex)
                 break
             #df = pd.DataFrame()
@@ -296,7 +341,7 @@ if __name__ == "__main__":
              ddf = eval("ddf.assign("+c+"=daskdf[c])")
 
 
-             #daskdf = daskdf.apply(daskdf.max() >= 10, axis=1)
+    #daskdf = daskdf.apply(daskdf.max() >= 10, axis=1)
     ddf.to_csv("./"+bif+"_dask*.csv",index_label='Sequence',name_function=name) #,index=True)
 
 
