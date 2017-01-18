@@ -26,11 +26,13 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3283891/
 
 TRIMMOMATIC
 Allows user to clean up fastq file prior to using mercat
-java -jar trimmomatic-0.33.jar SE -phred33 In.fastq Out.fastq ILLUMINACLIP:adapters/TruSeq2-SE:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50
+java -jar trimmomatic-0.33.jar SE -phred33 In.fastq Out.fastq ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50
 User defines: 
 SLIDINGWINDOW:4:30
 Scan the read with a 4-base wide sliding window, cutting when the average quality per base drops below 30 (SLIDINGWINDOW:4:30)
 User can define the :4:X not the window size aka 4. 
+
+trimmomatic SE -phred33 test.fq Out.fastq ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50
 
 PRODIGAL
 To format nucleotide.fa/.fasta to .faa

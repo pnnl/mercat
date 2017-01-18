@@ -19,12 +19,24 @@ import glob
 import psutil
 import timeit
 import humanize
+import subprocess
 import pandas as pd
 from collections import OrderedDict
 from joblib import Parallel, delayed
 
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
+
+
+def check_command(cmd):
+    cmd1 = cmd
+    if cmd == 'trimmomatic': cmd1 = 'trimmomatic -version'
+    with open(os.devnull, 'w') as FNULL:
+        try:
+            subprocess.check_call(cmd1, stdout=FNULL, stderr=FNULL, shell=True)
+        except subprocess.CalledProcessError as e:
+            # print e.output -- null since we suppressed output in check_call
+            print "Mercat Error: %s not found, please setup prodigal using: conda install %s" %(cmd,cmd)
 
 
 def parseargs(argv=None):
@@ -38,16 +50,26 @@ def parseargs(argv=None):
 
     num_cores = psutil.cpu_count(logical=False)
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter)
-    parser.add_argument('-i', type=str, required = True, help='path-to-input-file')
+    parser.add_argument('-i', type=str, required = True, help='path-to-input-file') #default=nucleotide
     parser.add_argument('-k', type=int, required = True, help='kmer length')
     parser.add_argument('-n', type=int, default=num_cores, help='no of cores [default = all]')  # no of cores to use
     parser.add_argument('-c', type=int, default=10, help='minimum kmer count [default = 10]')  # minimum kmer count to report
+    #QUESTION: Is the kmer counter supposed to do anything different if inp file is protein or nucleotide file
+    #parser.add_argument('-pro', action='store_true', help='protein input file')
+    #parser.add_argument('-nuc', action='store_true', help='nucleotide input file')#default
+    parser.add_argument('-q', action='store_true', help='fastQ input file')
+    parser.add_argument('-p', action='store_true', help='run prodigal on fasta file')
+    parser.add_argument('-t', type=str, required=False, help='Trimmomatic options')
 
     # Process arguments
     args = parser.parse_args()
     if os.path.exists(args.i) < 1:
         path_error = "file " + args.i + " does not exist.\n"
         parser.error(path_error)
+
+    if args.p: check_command('prodigal')
+    if args.t: check_command('trimmomatic')
+
     return args
 
 
@@ -80,10 +102,37 @@ if __name__ == "__main__":
     num_cores = __args__.n
     inputfile = __args__.i
     prune_kmer = __args__.c
+    mflag_fastq = __args__.q
+    mflag_prodigal = __args__.p
+    mflag_trimmomatic = __args__.t
+    #mflag_protein = __args__.pro
+    #mflag_nucleotide = __args__.nuc
 
-    print "Running mercat using " + str(num_cores) + " cores"
+    print __args__
 
     bif = os.path.splitext(os.path.basename(inputfile))[0]
+
+    '''trimmomatic SE -phred33 test.fq Out.fastq ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50'''
+    if mflag_trimmomatic:
+        trimmed_file = bif+"_trimmed.fq"
+        prod_cmd = "trimmomatic SE -phred33 %s %s ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50" %(inputfile,trimmed_file)
+        with open(os.devnull, 'w') as FNULL:
+            subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
+        inputfile = trimmed_file
+
+
+    "Run prodigal if specified"
+    '''prodigal -i test_amino-acid.fa -o output.gff -a output.orf_pro.faa  -f gff -p meta -d output.orf_nuc'''
+    if mflag_prodigal:
+        gen_protein_file = bif+"_pro.faa"
+        prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".out",gen_protein_file,bif+".nuc")
+        with open(os.devnull, 'w') as FNULL:
+            subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
+        inputfile = gen_protein_file
+
+    print "Running mercat using " + str(num_cores) + " cores"
+    print "input file: " + inputfile
+
 
     # ipfiles = glob.glob("*.faa")
     # ipfiles.extend(glob.glob("*.fa"))
