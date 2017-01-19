@@ -59,7 +59,7 @@ def parseargs(argv=None):
     #parser.add_argument('-nuc', action='store_true', help='nucleotide input file')#default
     parser.add_argument('-q', action='store_true', help='fastQ input file')
     parser.add_argument('-p', action='store_true', help='run prodigal on fasta file')
-    parser.add_argument('-t', type=str, required=False, help='Trimmomatic options')
+    parser.add_argument('-t',type=int,nargs='?',const=30,required=False,help='Trimmomatic options')
 
     # Process arguments
     args = parser.parse_args()
@@ -114,8 +114,9 @@ if __name__ == "__main__":
 
     '''trimmomatic SE -phred33 test.fq Out.fastq ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50'''
     if mflag_trimmomatic:
+        swq = mflag_trimmomatic
         trimmed_file = bif+"_trimmed.fq"
-        prod_cmd = "trimmomatic SE -phred33 %s %s ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50" %(inputfile,trimmed_file)
+        prod_cmd = "trimmomatic SE -phred33 %s %s ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:%s MINLEN:50" %(inputfile,trimmed_file,swq)
         with open(os.devnull, 'w') as FNULL:
             subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
         inputfile = trimmed_file
