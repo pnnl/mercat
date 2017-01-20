@@ -108,7 +108,7 @@ if __name__ == "__main__":
     #mflag_protein = __args__.pro
     #mflag_nucleotide = __args__.nuc
 
-    print __args__
+    #print __args__
 
     bif = os.path.splitext(os.path.basename(inputfile))[0]
 
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     '''prodigal -i test_amino-acid.fa -o output.gff -a output.orf_pro.faa  -f gff -p meta -d output.orf_nuc'''
     if mflag_prodigal:
         gen_protein_file = bif+"_pro.faa"
-        prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".out",gen_protein_file,bif+".nuc")
+        prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".gff",gen_protein_file,bif+"_nuc.ffa")
         with open(os.devnull, 'w') as FNULL:
             subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
         inputfile = gen_protein_file
