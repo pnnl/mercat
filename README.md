@@ -55,7 +55,7 @@ Need to calculate metrics from .faa or protein coding file
 - Add pI calculation
 http://isoelectric.ovh.org/
 
--Hydro, MW and pH
+-Hydro, MW and pI
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3283891/
 
 
@@ -69,8 +69,8 @@ This would split the file by ">" every 100 mb of file evenly. It could also do i
 Dependencies
 ------------
 Mercat needs the following python libraries:   
-> pip install pandas joblib
->pip3 install humanize --user
+> pip install pandas joblib --user
+> pip3 install humanize --user
 Add humanize 
 
 
@@ -78,4 +78,32 @@ Current Limitations
 --------------------
 - Mercat only works with 1 input file at a time. Could we process more files at once in the future?
 - multiple file summary
+
+
+Plots
+----
+
+Nucleotides for a single sample:
+1.From Summary file: Stacked Bar chart for Top 10 kmers -- % of them Freq on Y axis, kmer (count?)on X
+2.From Summary file: Cluster graph - kmer on Y axis, GC% and AT% on Xaxis - top 10 kmers - count G,C,A,T
+
+Protein for a single sample:
+From summary file:
+1. same as 1. 
+2. scatter plots for PI, MW, Hydro (Top 10 kmers)
+
+
+DISCUSS
+--------
+For NUC:
+ - we have AT,GC calc in both k-mer summary and gene seq reports
+
+For protein: 
+ - do we need AT,GC % calculation - currently we have it only in seq report csv - not in kmer summary
+ - we have Pi,MW,Hydro for k-mer summary, but not in seq csv
+
+Different options and their combinations and error checks
+
+Sorted summary file in dec order of kmer occurence counts 
+Revisit scatter plots - x vs y axis
 

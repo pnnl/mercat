@@ -58,7 +58,6 @@ def parseargs(argv=None):
     parser.add_argument('-k', type=int, required = True, help='kmer length')
     parser.add_argument('-n', type=int, default=num_cores, help='no of cores [default = all]')  # no of cores to use
     parser.add_argument('-c', type=int, default=10, help='minimum kmer count [default = 10]')  # minimum kmer count to report
-    #QUESTION: Is the kmer counter supposed to do anything different if inp file is protein or nucleotide file
     parser.add_argument('-pro', action='store_true', help='protein input file')
     #parser.add_argument('-nuc', action='store_true', help='nucleotide input file')#default
     parser.add_argument('-q', action='store_true', help='fastQ input file')
@@ -242,8 +241,8 @@ if __name__ == "__main__":
             df.set_value(k, "GC_Percent", round(((c_kmer.count("G")+c_kmer.count("C")) / len_cseq) * 100.0))
             df.set_value(k, "AT_Percent", round(((c_kmer.count("A")+c_kmer.count("T")) / len_cseq) * 100.0))
 
-
-    df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
+    df_summ_sort = df.sort_values(bif, ascending=False)
+    df_summ_sort.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
 
     dfcol = significant_kmers
 
@@ -265,10 +264,16 @@ if __name__ == "__main__":
 
     print "Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
 
-
     #Debug
     # sname = '515620.EUBELI_01521'
     # print df.loc[sname,"length"]
     # print df.loc[sname,"GC"]
     # print df.loc[sname,"AT"]
 
+    if mflag_protein:
+        mercat_scatter_plots(bif,'PI',df_summ_sort,kmerstring)
+        mercat_scatter_plots(bif,'MW', df_summ_sort, kmerstring)
+        mercat_scatter_plots(bif,'Hydro', df_summ_sort, kmerstring)
+    else:
+        mercat_scatter_plots(bif,'GC_Percent',df_summ_sort,kmerstring)
+        mercat_scatter_plots(bif,'AT_Percent', df_summ_sort, kmerstring)

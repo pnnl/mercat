@@ -163,3 +163,102 @@ def calculate_hydro(seq):
     for c in seq:
         if c in hydro_scores: hydro += hydro_scores[c]
     return round(hydro,2)
+
+
+
+def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
+
+    import plotly.graph_objs as go
+    from plotly.offline import plot
+
+    axis_title_font_size = 20
+    axis_tick_label_size = 18
+    legend_font_size = 14
+    marker_size = 10
+
+    save_img = 0
+
+    trace1 = go.Scatter(
+        x=res_df[xlab].values[:10],
+        y=res_df.index.values[:10],
+        mode='markers'
+    )
+
+    data = go.Data([trace1])
+    layout = go.Layout(
+        legend=dict(
+            font=dict(
+                # family='sans-serif',
+                size=legend_font_size,
+                color='black'
+            ),
+            # borderwidth=2
+        ),
+        autosize=True,
+        height=632,
+        # title='Baseline',
+        width=1274,
+        xaxis=dict(
+            # autorange=True,
+            fixedrange=False,
+            title=xlab,
+            # type='linear',
+            # showgrid=False,
+            ticks='inside',
+            ticklen=8,
+            tickwidth=2,
+            tickcolor='#000',
+            #tickvals=list(reversed(cores)),
+            titlefont=dict(
+                # family='Courier New, monospace',
+                size=axis_title_font_size,
+                color='black'
+            ),
+            tickfont=dict(
+                # family='Old Standard TT, serif',
+                size=axis_tick_label_size,
+                color='black'
+            ),
+            showgrid=True,
+            showline=True,
+            mirror=True,
+            zeroline=False,
+            # gridcolor='black',
+            # linecolor='black',
+            gridwidth=2
+        ),
+        yaxis=dict(
+            #type='log',
+            autorange=True,
+            fixedrange=False,
+            ticks='inside',
+            ticklen=8,
+            tickwidth=2,
+            tickcolor='#000',
+            titlefont=dict(
+                # family='Courier New, monospace',
+                size=axis_title_font_size,
+                color='black'
+                # color='#7f7f7f'
+            ),
+            rangemode='normal',
+            tickmode='linear',
+            # tickwidth=4,
+            tickfont=dict(
+                # family='Old Standard TT, serif',
+                size=axis_tick_label_size,
+                color='black'
+            ),
+            showgrid=True,
+            showline=True,
+            mirror=True,
+            zeroline=False,
+            # gridcolor='black',
+            # linecolor='black',
+            gridwidth=2,
+            title=kmerstring
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot(fig, filename=bif + "_"+xlab+".html", auto_open=False)
