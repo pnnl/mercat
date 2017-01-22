@@ -27,7 +27,6 @@ from joblib import Parallel, delayed
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
-
 def check_command(cmd):
     cmd1 = cmd
     if cmd == 'trimmomatic': cmd1 = 'trimmomatic -version'
@@ -37,6 +36,8 @@ def check_command(cmd):
         except subprocess.CalledProcessError as e:
             # print e.output -- null since we suppressed output in check_call
             print "Mercat Error: %s not found, please setup prodigal using: conda install %s" %(cmd,cmd)
+
+
 
 
 def parseargs(argv=None):
@@ -55,7 +56,7 @@ def parseargs(argv=None):
     parser.add_argument('-n', type=int, default=num_cores, help='no of cores [default = all]')  # no of cores to use
     parser.add_argument('-c', type=int, default=10, help='minimum kmer count [default = 10]')  # minimum kmer count to report
     #QUESTION: Is the kmer counter supposed to do anything different if inp file is protein or nucleotide file
-    #parser.add_argument('-pro', action='store_true', help='protein input file')
+    parser.add_argument('-pro', action='store_true', help='protein input file')
     #parser.add_argument('-nuc', action='store_true', help='nucleotide input file')#default
     parser.add_argument('-q', action='store_true', help='fastQ input file')
     parser.add_argument('-p', action='store_true', help='run prodigal on fasta file')
@@ -105,7 +106,7 @@ if __name__ == "__main__":
     mflag_fastq = __args__.q
     mflag_prodigal = __args__.p
     mflag_trimmomatic = __args__.t
-    #mflag_protein = __args__.pro
+    mflag_protein = __args__.pro
     #mflag_nucleotide = __args__.nuc
 
     #print __args__
@@ -125,6 +126,7 @@ if __name__ == "__main__":
     "Run prodigal if specified"
     '''prodigal -i test_amino-acid.fa -o output.gff -a output.orf_pro.faa  -f gff -p meta -d output.orf_nuc'''
     if mflag_prodigal:
+        mflag_protein = True
         gen_protein_file = bif+"_pro.faa"
         prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".gff",gen_protein_file,bif+"_nuc.ffa")
         with open(os.devnull, 'w') as FNULL:
@@ -220,12 +222,31 @@ if __name__ == "__main__":
 
     #df = df.ix[df[bif] >= prune_kmer]
 
-    df = pd.DataFrame(0,index=significant_kmers,columns=[bif])
-    for k in significant_kmers:
-        df.set_value(k,bif,kmerlist[k])
+
+    from metrics import *
+
+
+    if mflag_protein:
+        df = pd.DataFrame(0, index=significant_kmers, columns=[bif,"PI","MW","Hydro"])
+        for k in significant_kmers:
+            df.set_value(k, bif, kmerlist[k])
+            df.set_value(k,"PI", predict_isoelectric_point_ProMoST(k))
+            #df.set_value(k, "MW", calculate_MW(k))
+            #df.set_value(k, "Hydro", calculate_hydro(k))
+    else:
+        df = pd.DataFrame(0, index=significant_kmers, columns=[bif,"GC_Percent","AT_Percent"])
+        for k in significant_kmers:
+            c_kmer = k
+            df.set_value(k, bif, kmerlist[k])
+            len_cseq = float(len(c_kmer))
+            df.set_value(k, "GC_Percent", round(((c_kmer.count("G")+c_kmer.count("C")) / len_cseq) * 100.0))
+            df.set_value(k, "AT_Percent", round(((c_kmer.count("A")+c_kmer.count("T")) / len_cseq) * 100.0))
+
+
     df.to_csv(bif+"_summary.csv",index_label='Kmer',index=True)
 
     dfcol = significant_kmers
+
     dfcol.extend(["length","GC_Percent","AT_Percent"])
 
     df = pd.DataFrame(0,index=sequences.keys(),columns=dfcol)
