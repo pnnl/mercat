@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 
 
+'''
+predict_isoelectric_point_ProMoST code from
+#http://isoelectric.ovh.org/
+http://biologydirect.biomedcentral.com/articles/10.1186/s13062-016-0159-9
+IPC – Isoelectric Point Calculator
+Lukasz P. KozlowskiEmail authorView ORCID ID profile
+Biology Direct201611:55
+DOI: 10.1186/s13062-016-0159-9
+'''
+
 # N-teminus, middle, C-terminus
 promost = {
     'K': [10.00, 9.80, 10.30],
@@ -41,7 +51,6 @@ promost_mid = {
     'U': [5.20, 5.60],
     'O': [7.00, 3.50],
 }
-
 
 def predict_isoelectric_point_ProMoST(seq):
     '''Calculate isoelectric point using ProMoST model'''
@@ -84,11 +93,43 @@ def predict_isoelectric_point_ProMoST(seq):
             # print "pH: ", pH, ",\tpHprev: ", pHprev
 
         if (pH - pHprev < E) and (pHnext - pH < E):  # terminal condition, finding pI with given precision
-            return pH
+            return round(pH,2)
 
+
+mass_aa = { #monoisotopic 	average #Kyte-Doolittle?
+"A"	: 71.0788,
+"B" : 114.6686,   # Asx   Aspartic acid or Asparagine
+"C"	: 103.1388,
+"D"	: 115.0886,
+"E"	: 129.1155,
+"F"	: 147.1766,
+"G"	: 57.0519,
+"H"	: 137.1411,
+"I"	: 113.1594,
+"K"	: 128.1741,
+"L"	: 113.1594,
+"M"	: 131.1926,
+"N"	: 114.1038,
+"O"	: 237.3018,
+"P"	: 97.1167,
+"Q"	: 128.1307,
+"R"	: 156.1875,
+"S"	: 87.0782,
+"T"	: 101.1051,
+"U"	: 150.0388,
+"V"	: 99.1326,
+"W"	: 186.2132,
+"X" : 111.1138, # Xaa   Any amino acid
+"Y"	: 163.176,
+"Z" : 128.7531    #Glx   Glutamine or Glutamic acid
+}
 
 def calculate_MW(seq):
-    a = seq
+    mw = 0.0
+    for c in seq:
+        if c in mass_aa: mw += mass_aa[c]
+    mw += 18.01524 #avg for water molecule
+    return round(mw,2)
 
 def calculate_hydro(seq):
     a = seq

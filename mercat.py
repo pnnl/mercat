@@ -227,11 +227,11 @@ if __name__ == "__main__":
 
 
     if mflag_protein:
-        df = pd.DataFrame(0, index=significant_kmers, columns=[bif,"PI","MW","Hydro"])
+        df = pd.DataFrame(0.0, index=significant_kmers, columns=[bif,"PI","MW","Hydro"])
         for k in significant_kmers:
             df.set_value(k, bif, kmerlist[k])
             df.set_value(k,"PI", predict_isoelectric_point_ProMoST(k))
-            #df.set_value(k, "MW", calculate_MW(k))
+            df.set_value(k, "MW", calculate_MW(k))
             #df.set_value(k, "Hydro", calculate_hydro(k))
     else:
         df = pd.DataFrame(0, index=significant_kmers, columns=[bif,"GC_Percent","AT_Percent"])
