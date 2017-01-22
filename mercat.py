@@ -27,6 +27,9 @@ from joblib import Parallel, delayed
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
+
+from metrics import *
+
 def check_command(cmd):
     cmd1 = cmd
     if cmd == 'trimmomatic': cmd1 = 'trimmomatic -version'
@@ -223,16 +226,13 @@ if __name__ == "__main__":
     #df = df.ix[df[bif] >= prune_kmer]
 
 
-    from metrics import *
-
-
     if mflag_protein:
         df = pd.DataFrame(0.0, index=significant_kmers, columns=[bif,"PI","MW","Hydro"])
         for k in significant_kmers:
             df.set_value(k, bif, kmerlist[k])
             df.set_value(k,"PI", predict_isoelectric_point_ProMoST(k))
             df.set_value(k, "MW", calculate_MW(k))
-            #df.set_value(k, "Hydro", calculate_hydro(k))
+            df.set_value(k, "Hydro", calculate_hydro(k))
     else:
         df = pd.DataFrame(0, index=significant_kmers, columns=[bif,"GC_Percent","AT_Percent"])
         for k in significant_kmers:

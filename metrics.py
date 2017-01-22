@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
 
-'''
-predict_isoelectric_point_ProMoST code from
+
+#predict_isoelectric_point_ProMoST code from
 #http://isoelectric.ovh.org/
-http://biologydirect.biomedcentral.com/articles/10.1186/s13062-016-0159-9
-IPC – Isoelectric Point Calculator
-Lukasz P. KozlowskiEmail authorView ORCID ID profile
-Biology Direct201611:55
-DOI: 10.1186/s13062-016-0159-9
-'''
+#http://biologydirect.biomedcentral.com/articles/10.1186/s13062-016-0159-9
+#IPC - Isoelectric Point Calculator
+#Lukasz P. Kozlowski
+#Biology Direct 2016
+#DOI: 10.1186/s13062-016-0159-9
+
 
 # N-teminus, middle, C-terminus
 promost = {
@@ -124,12 +124,42 @@ mass_aa = { #monoisotopic 	average #Kyte-Doolittle?
 "Z" : 128.7531    #Glx   Glutamine or Glutamic acid
 }
 
-def calculate_MW(seq):
+# Kyte-Doolittle Hydropathy Scores
+hydro_scores = {
+"A" : 1.8,
+"R" : -4.5,
+"N" : -3.5,
+"D" : -3.5,
+"C" : 2.5,
+"Q" : -3.5,
+"E" : -3.5,
+"G" : -0.4,
+"H" : -3.2,
+"I" : 4.5,
+"L" : 3.8,
+"K" : -3.9,
+"M" : 1.9,
+"F" : 2.8,
+"P" : -1.6,
+"S" : -0.8,
+"T" : -0.7,
+"W" : -0.9,
+"Y" : -1.3,
+"V" : 4.2
+
+ }
+
+
+def calculate_MW(seq): #calculate based on average mass
     mw = 0.0
     for c in seq:
         if c in mass_aa: mw += mass_aa[c]
     mw += 18.01524 #avg for water molecule
     return round(mw,2)
 
+
 def calculate_hydro(seq):
-    a = seq
+    hydro = 0.0
+    for c in seq:
+        if c in hydro_scores: hydro += hydro_scores[c]
+    return round(hydro,2)
