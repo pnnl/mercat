@@ -130,7 +130,7 @@ if __name__ == "__main__":
     if mflag_prodigal:
         mflag_protein = True
         gen_protein_file = bif+"_pro.faa"
-        prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".gff",gen_protein_file,bif+"_nuc.ffa")
+        prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".gff",gen_protein_file,bif+"_nuc.ffn")
         with open(os.devnull, 'w') as FNULL:
             subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
         inputfile = gen_protein_file
@@ -246,18 +246,38 @@ if __name__ == "__main__":
 
     dfcol = significant_kmers
 
-    dfcol.extend(["length","GC_Percent","AT_Percent"])
 
-    df = pd.DataFrame(0,index=list(sequences.keys()),columns=dfcol)
+    if not mflag_protein:
+        dfcol.extend(["length","GC_Percent","AT_Percent"])
 
-    for seq in sequences:
-        cseq = sequences[seq]
-        len_cseq = float(len(cseq))
-        df.set_value(seq, "length", int(len_cseq))
-        df.set_value(seq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
-        df.set_value(seq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
-        for ss in kmerlist_all_seq[seq]:
-            df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
+        df = pd.DataFrame(0,index=list(sequences.keys()),columns=dfcol)
+
+        for seq in sequences:
+            cseq = sequences[seq]
+            len_cseq = float(len(cseq))
+            df.set_value(seq, "length", int(len_cseq))
+            df.set_value(seq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
+            df.set_value(seq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
+            for ss in kmerlist_all_seq[seq]:
+                df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
+
+
+    else:
+
+        dfcol.extend(["length", "PI", "MW","Hydro"])
+
+        df = pd.DataFrame(0, index=list(sequences.keys()), columns=dfcol)
+
+        for seq in sequences:
+            cseq = sequences[seq]
+            cseq=cseq.translate(None, '*')
+            len_cseq = float(len(cseq))
+            df.set_value(seq, "length", int(len_cseq))
+            df.set_value(seq, "PI", predict_isoelectric_point_ProMoST(cseq))
+            df.set_value(seq, "MW", calculate_MW(cseq))
+            df.set_value(seq, "Hydro", calculate_hydro(cseq))
+            for ss in kmerlist_all_seq[seq]:
+                df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
     df = df.loc[:,df.max() >= prune_kmer]
     df.to_csv(bif+".csv",index_label='Sequence',index=True)
