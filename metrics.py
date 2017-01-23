@@ -61,12 +61,12 @@ def predict_isoelectric_point_ProMoST(seq):
     E = 0.01  # epsilon means precision [pI = pH +- E]
     temp = 0.01
     while 1:
-        if seq[0] in promost.keys():
+        if seq[0] in promost:
             QN1 = -1.0 / (1.0 + pow(10, (promost[seq[0]][2] - pH)))
         else:
             QN1 = -1.0 / (1.0 + pow(10, (promost_mid[seq[0]][1] - pH)))
         # print
-        if seq[-1] in promost.keys():
+        if seq[-1] in promost:
             QP2 = 1.0 / (1.0 + pow(10, (pH - promost[seq[-1]][0])))
         else:
             QP2 = 1.0 / (1.0 + pow(10, (pH - promost_mid[seq[-1]][0])))
