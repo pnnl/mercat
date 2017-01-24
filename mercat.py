@@ -170,6 +170,7 @@ if __name__ == "__main__":
                         sequences[sname] = seq
                         seq = ""
                     sname = line[1:]
+                    sname = sname.split("#",1)[0].strip()
                 else:
                     seq += line
 
