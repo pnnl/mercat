@@ -76,15 +76,15 @@ def parseargs(argv=None):
     return args
 
 
-def get_all_substrings(input_string):
+def get_all_substrings(input_string,kmer):
     length = len(input_string)
     return [input_string[i:i + kmer] for i in range(length-kmer+1)]
 
-def calculateKmerCount(seq,cseq, prune_kmer):
+def calculateKmerCount(seq,cseq, prune_kmer,kmer):
     kmerlist = dict()
     kmerlist_all_seq = dict()
     #cseq = sequences[seq] #Get current sequence
-    sslist = get_all_substrings(cseq) # get all substrings of current sequence
+    sslist = get_all_substrings(cseq,kmer) # get all substrings of current sequence
     kmerlist_all_seq[seq] = dict() #kmer count for each substring of current sequence
     #print sslist
     for ss in sslist:
@@ -98,7 +98,7 @@ def calculateKmerCount(seq,cseq, prune_kmer):
     return [kmerlist,kmerlist_all_seq]
 
 
-if __name__ == "__main__":
+def mercat_main():
     __args__ = parseargs()
 
     kmer = __args__.k
@@ -198,7 +198,7 @@ if __name__ == "__main__":
 
 
     results = Parallel(n_jobs=num_cores)(
-        delayed(calculateKmerCount)(seq, sequences[seq], prune_kmer) for seq in sequences)
+        delayed(calculateKmerCount)(seq, sequences[seq], prune_kmer, kmer) for seq in sequences)
 
     kmerlist = dict()
     kmerlist_all_seq = dict()
@@ -300,3 +300,6 @@ if __name__ == "__main__":
     else:
         mercat_scatter_plots(bif,'GC_Percent',df_summ_sort,kmerstring)
         mercat_scatter_plots(bif,'AT_Percent', df_summ_sort, kmerstring)
+
+if __name__ == "__main__":
+    mercat_main()
