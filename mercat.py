@@ -38,7 +38,7 @@ def check_command(cmd):
             subprocess.check_call(cmd1, stdout=FNULL, stderr=FNULL, shell=True)
         except subprocess.CalledProcessError as e:
             # print e.output -- null since we suppressed output in check_call
-            print "Mercat Error: %s not found, please setup prodigal using: conda install %s" %(cmd,cmd)
+            print("Mercat Error: %s not found, please setup prodigal using: conda install %s" %(cmd,cmd))
 
 
 
@@ -78,7 +78,7 @@ def parseargs(argv=None):
 
 def get_all_substrings(input_string):
     length = len(input_string)
-    return [input_string[i:i + kmer] for i in xrange(length-kmer+1)]
+    return [input_string[i:i + kmer] for i in range(length-kmer+1)]
 
 def calculateKmerCount(seq,cseq, prune_kmer):
     kmerlist = dict()
@@ -135,8 +135,8 @@ if __name__ == "__main__":
             subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
         inputfile = gen_protein_file
 
-    print "Running mercat using " + str(num_cores) + " cores"
-    print "input file: " + inputfile
+    print("Running mercat using " + str(num_cores) + " cores")
+    print("input file: " + inputfile)
 
 
     # ipfiles = glob.glob("*.faa")
@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
     #print sequences.keys()[0] + "="+ sequences.values()[0]
 
-    print "Number of sequences in " + inputfile + " = "+ str(humanize.intword(len(sequences)))
+    print("Number of sequences in " + inputfile + " = "+ str(humanize.intword(len(sequences))))
 
 
     results = Parallel(n_jobs=num_cores)(
@@ -204,24 +204,24 @@ if __name__ == "__main__":
     kmerlist_all_seq = dict()
 
     for d in results:
-        for k,v in d[0].iteritems():
+        for k,v in d[0].items():
             if k in kmerlist:
                 kmerlist[k] += v
             else: kmerlist[k] = v
 
     for d in results:
-        for seq,kdict in d[1].iteritems():
+        for seq,kdict in d[1].items():
             #assert seq not in kmerlist_all_seq
             kmerlist_all_seq[seq] = kdict.copy()
 
-    print "Time to compute " + kmerstring +  ": " + str(round(timeit.default_timer() - start_time,2)) + " secs"
+    print("Time to compute " + kmerstring +  ": " + str(round(timeit.default_timer() - start_time,2)) + " secs")
 
     significant_kmers = []
     for k in kmerlist:
         if kmerlist[k] >= prune_kmer: significant_kmers.append(k)
 
-    print "Total number of " + kmerstring +  " found: " + str(humanize.intword(len(kmerlist)))
-    print kmerstring +  " with count >= " + str(prune_kmer) + ": " + str(humanize.intword(len(significant_kmers)))
+    print("Total number of " + kmerstring +  " found: " + str(humanize.intword(len(kmerlist))))
+    print(kmerstring +  " with count >= " + str(prune_kmer) + ": " + str(humanize.intword(len(significant_kmers))))
 
     #df = df.ix[df[bif] >= prune_kmer]
 
@@ -251,7 +251,7 @@ if __name__ == "__main__":
     if not mflag_protein:
         dfcol.extend(["length","GC_Percent","AT_Percent"])
 
-        df = pd.DataFrame(0,index=sequences.keys(),columns=dfcol)
+        df = pd.DataFrame(0,index=list(sequences.keys()),columns=dfcol)
 
         for seq in sequences:
             cseq = sequences[seq]
@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
         dfcol.extend(["length", "PI", "MW","Hydro"])
 
-        df = pd.DataFrame(0, index=sequences.keys(), columns=dfcol)
+        df = pd.DataFrame(0, index=list(sequences.keys()), columns=dfcol)
 
         for seq in sequences:
             cseq = sequences[seq]
@@ -285,7 +285,7 @@ if __name__ == "__main__":
 
     df.to_csv(bif+".csv",index_label='Sequence',index=True)
 
-    print "Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs"
+    print("Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs")
 
     #Debug
     # sname = '515620.EUBELI_01521'
