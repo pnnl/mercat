@@ -170,6 +170,7 @@ if __name__ == "__main__":
                         sequences[sname] = seq
                         seq = ""
                     sname = line[1:]
+                    sname = sname.split("#",1)[0].strip()
                 else:
                     seq += line
 
@@ -226,22 +227,22 @@ if __name__ == "__main__":
 
 
     if mflag_protein:
-        df = pd.DataFrame(0.0, index=significant_kmers, columns=[bif,"PI","MW","Hydro"])
+        df = pd.DataFrame(0.0, index=significant_kmers, columns=['Count',"PI","MW","Hydro"])
         for k in significant_kmers:
-            df.set_value(k, bif, kmerlist[k])
+            df.set_value(k, 'Count', kmerlist[k])
             df.set_value(k,"PI", predict_isoelectric_point_ProMoST(k))
             df.set_value(k, "MW", calculate_MW(k))
             df.set_value(k, "Hydro", calculate_hydro(k))
     else:
-        df = pd.DataFrame(0, index=significant_kmers, columns=[bif,"GC_Percent","AT_Percent"])
+        df = pd.DataFrame(0, index=significant_kmers, columns=['Count',"GC_Percent","AT_Percent"])
         for k in significant_kmers:
             c_kmer = k
-            df.set_value(k, bif, kmerlist[k])
+            df.set_value(k, 'Count', kmerlist[k])
             len_cseq = float(len(c_kmer))
             df.set_value(k, "GC_Percent", round(((c_kmer.count("G")+c_kmer.count("C")) / len_cseq) * 100.0))
             df.set_value(k, "AT_Percent", round(((c_kmer.count("A")+c_kmer.count("T")) / len_cseq) * 100.0))
 
-    df_summ_sort = df.sort_values(bif, ascending=False)
+    df_summ_sort = df.sort_values('Count', ascending=False)
     df_summ_sort.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
 
     dfcol = significant_kmers
@@ -261,6 +262,7 @@ if __name__ == "__main__":
             for ss in kmerlist_all_seq[seq]:
                 df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
+            df = df.loc[:, df.max() >= prune_kmer]
 
     else:
 
@@ -279,7 +281,8 @@ if __name__ == "__main__":
             for ss in kmerlist_all_seq[seq]:
                 df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
-    df = df.loc[:,df.max() >= prune_kmer]
+            df = df.loc[:,df.max() >= prune_kmer]
+
     df.to_csv(bif+".csv",index_label='Sequence',index=True)
 
     print("Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs")
