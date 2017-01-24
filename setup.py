@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='mercat',
-    version=__version__,
+    version='0.1',
     author='Ajay Panyala',
     author_email='ajay@example.com',
     packages=['mercat'],
     #url='http://github.com/ap/mercat/',
-    scripts=['bin/mercat-tool']
+    scripts=['bin/mercat']
 )

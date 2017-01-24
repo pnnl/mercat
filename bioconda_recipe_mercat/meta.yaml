@@ -1,0 +1,56 @@
+
+package:
+  name: mercat
+  version: "0.1"
+
+source:
+  #fn: mercat-0.1.tar.gz
+  path: /home/panyala/PycharmProjects/mercat-0.1
+  #url: http://hpc.pnl.gov/people/panyala/mercat-0.1.tar.gz
+  #md5: 6d88030db1ef70dabe6aedf066c9f35d
+
+build:
+  number: 0
+
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pandas
+    - numpy
+    - humanize
+    - plotly
+    - psutil
+    - joblib
+    - prodigal
+    - trimmomatic
+
+  run:
+    - python
+    - numpy
+    - pandas
+    - humanize
+    - plotly
+    - psutil
+    - joblib
+    - prodigal
+    - trimmomatic
+
+test:
+  # Python imports
+  imports:
+    - mercat
+
+  #commands:
+  #  - $PREFIX/mercat.py -h
+
+about:
+  home:
+  license: BSD
+  summary: 'Mercat: a versatile counter and diversity estimator for data base independent property analysis obtained from whole community sequencing data.'
+  license_family: BSD
+
+extra:
+  recipe-maintainers:
+    - ajaypanyala
