@@ -272,7 +272,7 @@ if __name__ == "__main__":
 
         for seq in sequences:
             cseq = sequences[seq]
-            cseq=cseq.translate(None, '*')
+            cseq=cseq.replace('*','')
             len_cseq = float(len(cseq))
             df.set_value(seq, "length", int(len_cseq))
             df.set_value(seq, "PI", predict_isoelectric_point_ProMoST(cseq))
