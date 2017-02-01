@@ -212,7 +212,7 @@ def mercat_main():
     for d in results:
         for seq,kdict in d[1].items():
             #assert seq not in kmerlist_all_seq
-            kmerlist_all_seq[seq] = kdict.copy()
+            kmerlist_all_seq[seq] = kdict#.copy()
 
     print("Time to compute " + kmerstring +  ": " + str(round(timeit.default_timer() - start_time,2)) + " secs")
 
@@ -262,7 +262,16 @@ def mercat_main():
             for ss in kmerlist_all_seq[seq]:
                 df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
+            #df = df.loc[:, df.max() >= prune_kmer]
+            df1 = df.ix[:,['length','GC_Percent','AT_Percent']]
+            del df['length']
+            del df['GC_Percent']
+            del df['AT_Percent']
             df = df.loc[:, df.max() >= prune_kmer]
+            df.loc[:, 'length'] = df1.ix[:,'length']
+            df.loc[:, 'GC_Percent'] = df1.ix[:,'GC_Percent']
+            df.loc[:, 'AT_Percent'] = df1.ix[:,'AT_Percent']
+
 
     else:
 
@@ -281,7 +290,17 @@ def mercat_main():
             for ss in kmerlist_all_seq[seq]:
                 df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
 
-            df = df.loc[:,df.max() >= prune_kmer]
+            #df = df.loc[:,df.max() >= prune_kmer]
+            df1 = df.ix[:,['length','PI','MW','Hydro']]
+            del df['length']
+            del df['PI']
+            del df['MW']
+            del df['Hydro']
+            df = df.loc[:, df.max() >= prune_kmer]
+            df.loc[:, 'length'] = df1.ix[:,'length']
+            df.loc[:, 'PI'] = df1.ix[:,'PI']
+            df.loc[:, 'MW'] = df1.ix[:,'MW']
+            df.loc[:, 'Hydro'] = df1.ix[:, 'Hydro']
 
     df.to_csv(bif+".csv",index_label='Sequence',index=True)
 
