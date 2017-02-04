@@ -316,9 +316,11 @@ def mercat_main():
         mercat_scatter_plots(bif,'PI',df_summ_sort,kmerstring)
         mercat_scatter_plots(bif,'MW', df_summ_sort, kmerstring)
         mercat_scatter_plots(bif,'Hydro', df_summ_sort, kmerstring)
+        mercat_stackedbar_plots(bif, 'Freq', df_summ_sort, kmerstring)
     else:
         mercat_scatter_plots(bif,'GC_Percent',df_summ_sort,kmerstring)
         mercat_scatter_plots(bif,'AT_Percent', df_summ_sort, kmerstring)
+        mercat_stackedbar_plots(bif, 'Freq', df_summ_sort, kmerstring)
 
 if __name__ == "__main__":
     mercat_main()

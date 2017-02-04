@@ -140,7 +140,7 @@ if __name__ == '__main__':
     parser.add_argument('outfolder', help='Path to output folder.')
 
     # flags
-    parser.add_argument('-c', '--chunksize', default='100M', help='Approximate size of file chunks.')
+    parser.add_argument('-c', '--chunksize', default='1000M', help='Approximate size of file chunks.')
 
     # required flag
     group = parser.add_mutually_exclusive_group(required=True)

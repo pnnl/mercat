@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import plotly.graph_objs as go
+from plotly.offline import plot
 
 
 #predict_isoelectric_point_ProMoST code from
@@ -166,10 +168,8 @@ def calculate_hydro(seq):
 
 
 
-def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
 
-    import plotly.graph_objs as go
-    from plotly.offline import plot
+def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
 
     axis_title_font_size = 20
     axis_tick_label_size = 18
@@ -262,3 +262,105 @@ def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
 
     fig = go.Figure(data=data, layout=layout)
     plot(fig, filename=bif + "_"+xlab+".html", auto_open=False)
+
+
+
+def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring):
+
+    axis_title_font_size = 20
+    axis_tick_label_size = 18
+    legend_font_size = 14
+    marker_size = 10
+
+    total_freq_count = res_df['Count'].sum()
+    index_vals = res_df.index.values[:10]
+
+    btraces = []
+    for i in range(0,10):
+        fr = res_df.loc[index_vals[i], 'Count'],
+        trace1 = go.Bar(
+            x=[bif],
+            y=[(fr[0]*1.0/total_freq_count)],
+            name = index_vals[i]
+        )
+        btraces.append(trace1)
+
+    data = go.Data(btraces)
+    layout = go.Layout(
+        barmode='stack',
+        legend=dict(
+            font=dict(
+                # family='sans-serif',
+                size=legend_font_size,
+                color='black'
+            ),
+            # borderwidth=2
+        ),
+        autosize=True,
+        height=632,
+        # title='Baseline',
+        width=1274,
+        xaxis=dict(
+            # autorange=True,
+            fixedrange=False,
+            title="Samples",
+            # type='linear',
+            # showgrid=False,
+            ticks='inside',
+            ticklen=8,
+            tickwidth=2,
+            tickcolor='#000',
+            #tickvals=list(reversed(cores)),
+            titlefont=dict(
+                # family='Courier New, monospace',
+                size=axis_title_font_size,
+                color='black'
+            ),
+            tickfont=dict(
+                # family='Old Standard TT, serif',
+                size=axis_tick_label_size,
+                color='black'
+            ),
+            showgrid=True,
+            showline=True,
+            mirror=True,
+            zeroline=False,
+            # gridcolor='black',
+            # linecolor='black',
+            gridwidth=2
+        ),
+        yaxis=dict(
+            #type='log',
+            autorange=True,
+            fixedrange=False,
+            ticks='inside',
+            ticklen=8,
+            tickwidth=2,
+            tickcolor='#000',
+            titlefont=dict(
+                # family='Courier New, monospace',
+                size=axis_title_font_size,
+                color='black'
+                # color='#7f7f7f'
+            ),
+            rangemode='normal',
+            tickmode='linear',
+            # tickwidth=4,
+            tickfont=dict(
+                # family='Old Standard TT, serif',
+                size=axis_tick_label_size,
+                color='black'
+            ),
+            showgrid=True,
+            showline=True,
+            mirror=True,
+            zeroline=False,
+            # gridcolor='black',
+            # linecolor='black',
+            gridwidth=2,
+            title=kmerstring
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plot(fig, filename=bif + "_barchart_"+xlab+".html", auto_open=False)
