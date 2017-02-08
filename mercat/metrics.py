@@ -270,14 +270,14 @@ def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
 
 
 
-def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring):
+def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring,total_freq_count):
 
     axis_title_font_size = 20
     axis_tick_label_size = 18
     legend_font_size = 14
     marker_size = 10
 
-    total_freq_count = res_df['Count'].sum()
+    #total_freq_count = res_df[xlab].sum()
     index_vals = res_df.index.values
 
     btraces = []

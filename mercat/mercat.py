@@ -28,8 +28,11 @@ from joblib import Parallel, delayed
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
+import dask.dataframe as dd
+
 from metrics import *
 from Chunker import mercat_chunker
+
 
 def check_command(cmd):
     cmd1 = cmd
@@ -113,20 +116,26 @@ def mercat_main():
     mflag_protein = __args__.pro
     #mflag_nucleotide = __args__.nuc
 
+    m_inputfile = os.path.abspath(m_inputfile)
+
     basename_ipfile = os.path.splitext(os.path.basename(m_inputfile))[0]
 
     inputfile_size = os.stat(m_inputfile).st_size
     dir_runs = basename_ipfile + "_run"
     cwd = os.getcwd()
+
+    if os.path.exists(dir_runs):
+        shutil.rmtree(dir_runs)
+    os.makedirs(dir_runs)
+
     all_chunks_ipfile = []
     if inputfile_size >= 10485760.0:
-        if os.path.exists(dir_runs):
-            shutil.rmtree(dir_runs)
-        os.makedirs(dir_runs)
         mercat_chunker(m_inputfile,dir_runs,"1M",">")
         os.chdir(dir_runs)
         all_chunks_ipfile = glob.glob("*")
-    else: all_chunks_ipfile.append(m_inputfile)
+    else:
+        os.chdir(dir_runs)
+        all_chunks_ipfile.append(m_inputfile)
 
     #print all_chunks_ipfile
     #sys.exit(1)
@@ -332,22 +341,22 @@ def mercat_main():
         # print df.loc[sname,"GC"]
         # print df.loc[sname,"AT"]
 
-
-
-    import dask.dataframe as dd
-
+    num_chunks = len(all_chunks_ipfile)
     df = dd.read_csv(basename_ipfile+"*_summary.csv")
-    df10 = df.groupby(kmerstring).sum().nlargest(10,'Count')
+    df10 = df.groupby(kmerstring).sum().nlargest(10,'Count').compute()
+    dfsum = df.sum(0).compute()
 
     if mflag_protein:
+        df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']]/num_chunks
         mercat_scatter_plots(basename_ipfile,'PI',df10,kmerstring)
         mercat_scatter_plots(basename_ipfile,'MW', df10, kmerstring)
         mercat_scatter_plots(basename_ipfile,'Hydro', df10, kmerstring)
-        mercat_stackedbar_plots(basename_ipfile, 'Freq', df10, kmerstring)
+        mercat_stackedbar_plots(basename_ipfile, 'Count', df10, kmerstring, dfsum.Count)
     else:
+        df10[['GC_Percent', 'AT_Percent']] = df10[['GC_Percent','AT_Percent']]/num_chunks
         mercat_scatter_plots(basename_ipfile,'GC_Percent',df10,kmerstring)
         mercat_scatter_plots(basename_ipfile,'AT_Percent', df10, kmerstring)
-        mercat_stackedbar_plots(basename_ipfile, 'Freq', df10, kmerstring)
+        mercat_stackedbar_plots(basename_ipfile, 'Count', df10, kmerstring, dfsum.Count)
 
 
 if __name__ == "__main__":
