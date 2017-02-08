@@ -131,6 +131,8 @@ def mercat_main():
     #print all_chunks_ipfile
     #sys.exit(1)
 
+    kmerstring = str(kmer) + "-mers"
+
     for inputfile in all_chunks_ipfile:
 
         bif = os.path.splitext(os.path.basename(inputfile))[0]
@@ -160,7 +162,7 @@ def mercat_main():
 
         sequences = OrderedDict()
         is_fastq = False
-        kmerstring = str(kmer)+"-mers"
+
 
         start_time = timeit.default_timer()
 
@@ -259,8 +261,9 @@ def mercat_main():
                 df.set_value(k, "GC_Percent", round(((c_kmer.count("G")+c_kmer.count("C")) / len_cseq) * 100.0))
                 df.set_value(k, "AT_Percent", round(((c_kmer.count("A")+c_kmer.count("T")) / len_cseq) * 100.0))
 
-        df_summ_sort = df.sort_values('Count', ascending=False)
-        df_summ_sort.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
+        # df_summ_sort = df.sort_values('Count', ascending=False)
+        # df_summ_sort.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
+        df.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
 
         dfcol = significant_kmers
 
@@ -329,15 +332,23 @@ def mercat_main():
         # print df.loc[sname,"GC"]
         # print df.loc[sname,"AT"]
 
-        # if mflag_protein:
-        #     mercat_scatter_plots(bif,'PI',df_summ_sort,kmerstring)
-        #     mercat_scatter_plots(bif,'MW', df_summ_sort, kmerstring)
-        #     mercat_scatter_plots(bif,'Hydro', df_summ_sort, kmerstring)
-        #     mercat_stackedbar_plots(bif, 'Freq', df_summ_sort, kmerstring)
-        # else:
-        #     mercat_scatter_plots(bif,'GC_Percent',df_summ_sort,kmerstring)
-        #     mercat_scatter_plots(bif,'AT_Percent', df_summ_sort, kmerstring)
-        #     mercat_stackedbar_plots(bif, 'Freq', df_summ_sort, kmerstring)
+
+
+    import dask.dataframe as dd
+
+    df = dd.read_csv(basename_ipfile+"*_summary.csv")
+    df10 = df.groupby(kmerstring).sum().nlargest(10,'Count')
+
+    if mflag_protein:
+        mercat_scatter_plots(basename_ipfile,'PI',df10,kmerstring)
+        mercat_scatter_plots(basename_ipfile,'MW', df10, kmerstring)
+        mercat_scatter_plots(basename_ipfile,'Hydro', df10, kmerstring)
+        mercat_stackedbar_plots(basename_ipfile, 'Freq', df10, kmerstring)
+    else:
+        mercat_scatter_plots(basename_ipfile,'GC_Percent',df10,kmerstring)
+        mercat_scatter_plots(basename_ipfile,'AT_Percent', df10, kmerstring)
+        mercat_stackedbar_plots(basename_ipfile, 'Freq', df10, kmerstring)
+
 
 if __name__ == "__main__":
     mercat_main()

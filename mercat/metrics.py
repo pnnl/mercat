@@ -184,8 +184,8 @@ def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
     save_img = 0
 
     trace1 = go.Scatter(
-        x=res_df[xlab].values[:10],
-        y=res_df.index.values[:10],
+        x=res_df[xlab].values,
+        y=res_df.index.values,
         mode='markers'
     )
 
@@ -278,7 +278,7 @@ def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring):
     marker_size = 10
 
     total_freq_count = res_df['Count'].sum()
-    index_vals = res_df.index.values[:10]
+    index_vals = res_df.index.values
 
     btraces = []
     for i in range(0,10):

@@ -108,3 +108,15 @@ Sorted summary file in dec order of kmer occurence counts
 Revisit scatter plots - x vs y axis
 
 python Chunker.py -c 10M ./test_nucleotide_file_BIG.00000.fa ./testC/ -d">"
+
+should the chunker be run on large fa or split fa's
+
+df = dd.read_csv('_summary*.csv')
+df.groupby("3-mers").sum()   -- combines same kmers from all csv files and adds up the freq, pi,mw counts
+
+pi,mw,hydro counts should not be summed up, just divide them by 10 in the end.
+
+
+since we merge all csvs in the end, there is no need to sort each csv in the code remove df_summ_sort
+
+
