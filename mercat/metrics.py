@@ -54,6 +54,7 @@ promost_mid = {
     'O': [7.00, 3.50],
 }
 
+import sys
 def predict_isoelectric_point_ProMoST(seq):
     '''Calculate isoelectric point using ProMoST model'''
     NQ = 0.0
@@ -70,8 +71,12 @@ def predict_isoelectric_point_ProMoST(seq):
         # print
         if seq[-1] in promost:
             QP2 = 1.0 / (1.0 + pow(10, (pH - promost[seq[-1]][0])))
-        else:
+        elif seq[-1] in promost_mid:
             QP2 = 1.0 / (1.0 + pow(10, (pH - promost_mid[seq[-1]][0])))
+        else:
+            print seq[-1] + " not found!"
+
+            sys.exit(1)
 
         QN2 = -seq.count('D') / (1.0 + pow(10, (promost['D'][1] - pH)))
         QN3 = -seq.count('E') / (1.0 + pow(10, (promost['E'][1] - pH)))

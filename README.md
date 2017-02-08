@@ -107,3 +107,4 @@ Different options and their combinations and error checks
 Sorted summary file in dec order of kmer occurence counts 
 Revisit scatter plots - x vs y axis
 
+python Chunker.py -c 10M ./test_nucleotide_file_BIG.00000.fa ./testC/ -d">"
