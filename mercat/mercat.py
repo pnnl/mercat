@@ -343,8 +343,11 @@ def mercat_main():
 
     num_chunks = len(all_chunks_ipfile)
     df = dd.read_csv(basename_ipfile+"*_summary.csv")
-    df10 = df.groupby(kmerstring).sum().nlargest(10,'Count').compute()
-    dfsum = df.sum(0).compute()
+    dfgb = df.groupby(kmerstring).sum()
+    df10 = dfgb.nlargest(10,'Count').compute()
+    dfsum = dfgb.sum(0).compute()
+
+
 
     if mflag_protein:
         df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']]/num_chunks
@@ -357,6 +360,10 @@ def mercat_main():
         mercat_scatter_plots(basename_ipfile,'GC_Percent',df10,kmerstring)
         mercat_scatter_plots(basename_ipfile,'AT_Percent', df10, kmerstring)
         mercat_stackedbar_plots(basename_ipfile, 'Count', df10, kmerstring, dfsum.Count)
+
+
+    all_counts = dfgb.Count.values.compute().astype(int)
+    mercat_compute_alpha_beta_diversity(all_counts,basename_ipfile)
 
 
 if __name__ == "__main__":

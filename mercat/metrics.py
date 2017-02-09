@@ -172,6 +172,27 @@ def calculate_hydro(seq):
     return round(hydro,2)
 
 
+from skbio.diversity import alpha as skbio_alpha
+from skbio.diversity import beta as skbio_beta
+
+def mercat_compute_alpha_beta_diversity(counts,bif):
+
+    abm = dict()
+
+    abm['shannon'] = skbio_alpha.shannon(counts)
+    abm['simpson'] = skbio_alpha.simpson(counts)
+    abm['simpson_e'] = skbio_alpha.simpson_e(counts)
+    abm['goods_coverage'] = skbio_alpha.goods_coverage(counts)
+    abm['fisher_alpha'] = skbio_alpha.fisher_alpha(counts)
+    abm['dominance'] = skbio_alpha.dominance(counts)
+    abm['chao1'] = skbio_alpha.chao1(counts)
+    abm['chao1_ci'] = skbio_alpha.chao1_ci(counts)
+    abm['ace'] = skbio_alpha.ace(counts)
+
+    with open(bif + "_diversity_metrics.txt", 'w') as dmptr:
+        for abmetric in abm:
+            dmptr.write(abmetric + " = " + str(abm[abmetric]) + "\n")
+
 
 
 def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
