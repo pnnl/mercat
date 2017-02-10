@@ -14,7 +14,8 @@ Other than as used herein, neither the name Battelle Memorial Institute or Batte
 the express written consent of Battelle.  Redistributions of the software in any form, and publications based on work performed
 using the software should include the following citation as a reference:
 Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Christer Jansson, Janet K Jansson. 
-MerCat: a versatile counter and estimator for data base independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. PeerJ Computional Biology. Pre-Print.
+MerCat: a versatile counter and estimator for data base independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. 
+PeerJ Computional Biology. Pre-Print.
 
 2. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
 BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
