@@ -111,12 +111,47 @@ python Chunker.py -c 10M ./test_nucleotide_file_BIG.00000.fa ./testC/ -d">"
 
 should the chunker be run on large fa or split fa's
 
-df = dd.read_csv('_summary*.csv')
-df.groupby("3-mers").sum()   -- combines same kmers from all csv files and adds up the freq, pi,mw counts
-
 pi,mw,hydro counts should not be summed up, just divide them by 10 in the end.
 
 
 since we merge all csvs in the end, there is no need to sort each csv in the code remove df_summ_sort
 
+alpha beta - we need kmers >=  10
 
+trimmed file would be .fa, .fna
+
+
+------------
+
+With -p option provided, the error msg is like
+
+ Input file provided should be one of the following formats: ['.fa', '.fna', '.ffn', '.fasta']
+
+or shud it be like : nucleotide assembled contigs should be in one of the ...
+
+//ly with -pro error msg shud look like- ?
+
+-nuc: if nothing is provided, shud this be the default ?
+
+
+-q -t 30 -all trimmomatic on fq with Q=30 as default, 
+creates a trim.fq and a trim.fna then call prodigal to 
+convert to .faa then run protein mercat on .faa +++++ run nucleotide mercat on trim.fna
+
+--split into---  
+
+-  -q -t 30 -p trimmomatic on fq with Q=30 as default, creates a trim.fq and a trim.fna 
+ then call prodigal to convert to .faa then run protein mercat on .faa
+
+- -q -t 30 (Nucleotide) trimmomatic on fq with Q=30 as default, creates a trim.fq and a trim.fna - 
+ run nucleotide mercat on trim.fna  
+
+
+-all nucleotide assembled contigs as .fa, .fna, .ffn, .fasta no quality provided are contigs
+
+split into 
+
+- -p: prodigal (protein mercat) on all nucleotide assembled contigs as .fa, .fna, .ffn, .fasta 
+- default: still provide .fa,.ffn, .fna, .fasta as input and do nucleotide mercat. 
+
+what about .fastq for -q option ??

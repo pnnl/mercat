@@ -47,6 +47,7 @@ def check_command(cmd):
 
 
 
+protein_file_ext = ['.fa','.fna','.ffn','.fasta']
 
 def parseargs(argv=None):
 
@@ -59,24 +60,64 @@ def parseargs(argv=None):
 
     num_cores = psutil.cpu_count(logical=False)
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter)
-    parser.add_argument('-i', type=str, required = True, help='path-to-input-file') #default=nucleotide
+    parser.add_argument('-i', type=str, required=False, help='path-to-input-file') #default=nucleotide
+    parser.add_argument('-f', type=str, required=False, help='path-to-folder-containing-input-files')
     parser.add_argument('-k', type=int, required = True, help='kmer length')
     parser.add_argument('-n', type=int, default=num_cores, help='no of cores [default = all]')  # no of cores to use
     parser.add_argument('-c', type=int, default=10, help='minimum kmer count [default = 10]')  # minimum kmer count to report
     parser.add_argument('-pro', action='store_true', help='protein input file')
-    #parser.add_argument('-nuc', action='store_true', help='nucleotide input file')#default
+    #parser.add_argument('-nuc', action='store_true', help='nucleotide input file')#default. We do not need this
     parser.add_argument('-q', action='store_true', help='fastQ input file')
     parser.add_argument('-p', action='store_true', help='run prodigal on fasta file')
     parser.add_argument('-t',type=int,nargs='?',const=30,required=False,help='Trimmomatic options')
 
     # Process arguments
     args = parser.parse_args()
-    if os.path.exists(args.i) < 1:
-        path_error = "file " + args.i + " does not exist.\n"
-        parser.error(path_error)
 
-    if args.p: check_command('prodigal')
+    if args.i:
+        if os.path.exists(args.i) < 1:
+            path_error = "file " + args.i + " does not exist.\n"
+            parser.error(path_error)
+    elif args.f:
+        if os.path.exists(args.f) < 1:
+            path_error = "folder " + args.f + " does not exist.\n"
+            parser.error(path_error)
+    else:
+        parser.error("Please provide either an input file (-i) or an input folder (-f)")
+
+
+    given_ext = (os.path.splitext(args.i)[1]).strip()
+
     if args.t: check_command('trimmomatic')
+
+    if not args.p and not args.q and not args.pro:
+        if given_ext not in protein_file_ext:
+            parser.error("Input file provided should be one of the following formats: " + str(protein_file_ext))
+
+    if args.p:
+        check_command('prodigal')
+        if given_ext not in protein_file_ext:
+            parser.error("Input file provided should be one of the following formats: " + str(protein_file_ext))
+
+    if args.pro:
+        if given_ext != ".faa":
+            parser.error("Input file provided should be in .faa format")
+
+    if args.i and args.f:
+        parser.error("Can only specify either an input file (-i option) or path to folder containing input files (-f option) at a time")
+
+    if args.q:
+        if given_ext != ".fq":
+            parser.error("Input file provided should be in .fq format")
+        if args.pro:
+            parser.error("Can only specify one of -q and -pro options at a time")
+        if args.p:
+            if not args.t:
+                parser.error("Should specify -t option as well when both -q and -p options are provided")
+        # if args.nuc:
+        #     if not args.t:
+        #         parser.error("Should specify -t option as well when both -q and -nuc options are provided")
+
 
     return args
 
@@ -114,14 +155,16 @@ def mercat_main():
     mflag_prodigal = __args__.p
     mflag_trimmomatic = __args__.t
     mflag_protein = __args__.pro
-    #mflag_nucleotide = __args__.nuc
+
+    np_string = "nucleotide"
+    if mflag_protein or mflag_prodigal: np_string = "protein"
 
     m_inputfile = os.path.abspath(m_inputfile)
 
     basename_ipfile = os.path.splitext(os.path.basename(m_inputfile))[0]
 
     inputfile_size = os.stat(m_inputfile).st_size
-    dir_runs = basename_ipfile + "_run"
+    dir_runs = basename_ipfile + "_" + np_string + "_run"
     cwd = os.getcwd()
 
     if os.path.exists(dir_runs):
@@ -160,6 +203,8 @@ def mercat_main():
         if mflag_prodigal:
             mflag_protein = True
             gen_protein_file = bif+"_pro.faa"
+            if mflag_fastq and mflag_trimmomatic:
+                gen_protein_file = os.path.splitext(os.path.basename(inputfile))[0]+"_pro.faa"
             prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".gff",gen_protein_file,bif+"_nuc.ffn")
             print prod_cmd
             with open(os.devnull, 'w') as FNULL:
