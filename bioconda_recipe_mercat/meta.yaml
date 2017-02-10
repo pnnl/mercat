@@ -16,6 +16,10 @@ build:
 requirements:
   build:
     - python
+    - scikit-bio
+    - prodigal
+    - trimmomatic
+    - dask
     - setuptools
     - pandas
     - numpy
@@ -23,19 +27,20 @@ requirements:
     - plotly
     - psutil
     - joblib
-    - prodigal
-    - trimmomatic
 
   run:
     - python
-    - numpy
+    - scikit-bio
+    - prodigal
+    - trimmomatic
+    - dask
+    - setuptools
     - pandas
+    - numpy
     - humanize
     - plotly
     - psutil
     - joblib
-    - prodigal
-    - trimmomatic
 
 test:
   # Python imports

@@ -118,8 +118,6 @@ since we merge all csvs in the end, there is no need to sort each csv in the cod
 
 alpha beta - we need kmers >=  10
 
-trimmed file would be .fa, .fna
-
 
 ------------
 
@@ -130,6 +128,7 @@ With -p option provided, the error msg is like
 or shud it be like : nucleotide assembled contigs should be in one of the ...
 
 //ly with -pro error msg shud look like- ?
+
 
 -nuc: if nothing is provided, shud this be the default ?
 
@@ -155,3 +154,12 @@ split into
 - default: still provide .fa,.ffn, .fna, .fasta as input and do nucleotide mercat. 
 
 what about .fastq for -q option ??
+
+
+---TODO---
+
+Graphs -> 0 to 100% or 0 to 1
+
+when chunking an input file - delete all chunked summary csv's and save the merged to disk
+
+way things are named _protein _nucleotide, etc
