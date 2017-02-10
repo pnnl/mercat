@@ -42,7 +42,7 @@ def check_command(cmd):
             subprocess.check_call(cmd1, stdout=FNULL, stderr=FNULL, shell=True)
         except subprocess.CalledProcessError as e:
             # print e.output -- null since we suppressed output in check_call
-            print("Mercat Error: %s not found, please setup prodigal using: conda install %s" %(cmd,cmd))
+            print("Mercat Error: %s not found, please setup %s using: conda install %s" %(cmd,cmd,cmd))
             sys.exit(1)
 
 
@@ -74,6 +74,9 @@ def parseargs(argv=None):
     # Process arguments
     args = parser.parse_args()
 
+    if args.i and args.f:
+        parser.error("Can only specify either an input file (-i) or path to folder containing input files (-f) at a time")
+
     if args.i:
         if os.path.exists(args.i) < 1:
             path_error = "file " + args.i + " does not exist.\n"
@@ -88,25 +91,22 @@ def parseargs(argv=None):
 
     given_ext = (os.path.splitext(args.i)[1]).strip()
 
-    if args.t: check_command('trimmomatic')
-
     if not args.p and not args.q and not args.pro:
         if given_ext not in protein_file_ext:
             parser.error("Input file provided should be one of the following formats: " + str(protein_file_ext))
 
     if args.p:
+        if args.pro: parser.error("Can only provide one of -p or -pro option at a time")
         check_command('prodigal')
-        if given_ext not in protein_file_ext:
+        if not args.q and given_ext not in protein_file_ext:
             parser.error("Input file provided should be one of the following formats: " + str(protein_file_ext))
 
-    if args.pro:
-        if given_ext != ".faa":
-            parser.error("Input file provided should be in .faa format")
-
-    if args.i and args.f:
-        parser.error("Can only specify either an input file (-i option) or path to folder containing input files (-f option) at a time")
+    if args.t:
+        if not args.q:
+            parser.error("-t option has to be provided along with -q")
 
     if args.q:
+        if args.t: check_command('trimmomatic')
         if given_ext != ".fq":
             parser.error("Input file provided should be in .fq format")
         if args.pro:
@@ -118,6 +118,9 @@ def parseargs(argv=None):
         #     if not args.t:
         #         parser.error("Should specify -t option as well when both -q and -nuc options are provided")
 
+    if args.pro:
+        if given_ext != ".faa":
+            parser.error("Input file provided should be in .faa format")
 
     return args
 
@@ -161,10 +164,10 @@ def mercat_main():
 
     m_inputfile = os.path.abspath(m_inputfile)
 
-    basename_ipfile = os.path.splitext(os.path.basename(m_inputfile))[0]
+    basename_ipfile = os.path.splitext(os.path.basename(m_inputfile))[0] + "_" + np_string
 
     inputfile_size = os.stat(m_inputfile).st_size
-    dir_runs = basename_ipfile + "_" + np_string + "_run"
+    dir_runs = basename_ipfile + "_run"
     cwd = os.getcwd()
 
     if os.path.exists(dir_runs):
@@ -187,7 +190,7 @@ def mercat_main():
 
     for inputfile in all_chunks_ipfile:
 
-        bif = os.path.splitext(os.path.basename(inputfile))[0]
+        bif = os.path.splitext(os.path.basename(inputfile))[0] + "_" + np_string
 
         '''trimmomatic SE -phred33 test.fq Out.fastq ILLUMINACLIP:TruSeq2-SE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:50'''
         if mflag_trimmomatic:
@@ -203,9 +206,38 @@ def mercat_main():
         if mflag_prodigal:
             mflag_protein = True
             gen_protein_file = bif+"_pro.faa"
+            prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" % (
+            inputfile, bif + ".gff", gen_protein_file, bif + "_nuc.ffn")
+
             if mflag_fastq and mflag_trimmomatic:
-                gen_protein_file = os.path.splitext(os.path.basename(inputfile))[0]+"_pro.faa"
-            prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" %(inputfile,bif+".gff",gen_protein_file,bif+"_nuc.ffn")
+                trimfna = bif + "_trimmed.fna"
+                sequences = OrderedDict()
+                with open(inputfile, 'r') as f:
+                    seq = ""
+                    sname = ""
+                    for line in f:
+                        line = line.strip()
+                        if line.startswith("@"):
+                            sname = line[1:].split()[0]
+                        elif line.startswith("+"):
+                            if seq:
+                                sequences[sname] = seq
+                                seq = ""
+                        else:
+                            if sname not in sequences: seq = line
+
+                fnastring = ""
+
+                for sname in sequences:
+                    fnastring += ">"+sname+"\n"
+                    fnastring += sequences[sname]+"\n"
+
+                with open(trimfna, 'w') as f: f.write(fnastring)
+
+                gen_protein_file = bif + "_trimmed_pro.faa"
+                prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" % (
+                trimfna, bif + ".gff", gen_protein_file, bif + "_nuc.ffn")
+
             print prod_cmd
             with open(os.devnull, 'w') as FNULL:
                 subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
