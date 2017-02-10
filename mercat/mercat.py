@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 
 """mercat.py: Python code for Parallel k-mer counting."""
-"""Usage: python mercat.py -i path-to-input-file -k kmer-value [-n no-of-cores] [-c kmer-min-count] """
-"""Example: To compute all 3-mers:
-            python mercat.py -i test.fa -k 3 -n 8 -c 10"""
-"""Results are stored in input-file-name.csv and input-file-name_summary.csv
-   (test.csv and test_summary.csv in the above example)"""
-"""test.csv contains kmer count for kmers in individual sequences
-   test_summary.csv contains kmer count for all unique kmers across all sequences in the sample test.fa"""
 
 __author__      = "Ajay Panyala, Richard A. White III"
 __copyright__   = "Copyright 2016"
@@ -181,6 +174,7 @@ def mercat_main():
                 all_ipfiles.append(mip)
 
     else:
+        m_inputfolder = os.getcwd()
         all_ipfiles.append(os.path.abspath(m_inputfile))
 
     for m_inputfile in all_ipfiles:

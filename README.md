@@ -12,6 +12,17 @@ Usage: python mercat.py -i path-to-input-file -k kmer-length [-n no-of-cores] [-
 - test.csv contains kmer count for kmers in individual sequences  
 - test_summary.csv contains kmer count for all unique kmers across all sequences in the sample test.fa
 
+
+- Usage: python mercat.py -i path-to-input-file -k kmer-value [-n no-of-cores] [-c kmer-min-count] """  
+- Example: To compute all 3-mers:  
+            python mercat.py -i test.fa -k 3 -n 8 -c 10
+- Results are stored in input-file-name.csv and input-file-name_summary.csv  
+   (test.csv and test_summary.csv in the above example)
+- test.csv contains kmer count for kmers in individual sequences  
+   test_summary.csv contains kmer count for all unique kmers across all sequences in the sample test.fa"""  
+   
+   
+   
 New Items:
 1. take a multiple file input then take output csv do MDS in matlibplot. 
  - MDS with each sample equaling one point
