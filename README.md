@@ -5,7 +5,7 @@ Mercat: Python code for Parallel k-mer counting
 
   
 Installing MerCat: 
- - Available in BioConda: Enable BioConda repo and run `conda install mercat`  
+ - Available via Anaconda: Enable BioConda repo and run `conda install mercat`  
  
 Usage:
 -----
@@ -20,16 +20,18 @@ Usage:
  * -t [T]      Trimmomatic options
  * -h, --help  show this help message
 
-By default mercat assumes that inputs provided is one of ['.fa', '.fna', '.ffn', '.fasta']
-> Example: To compute all 3-mers:
-            mercat -i test.fa -k 3 -n 8 -c 10 -p
-            
-- Runs prodigal on test.fa, then runs mercat on the resulting protein file.            
-- Results are stored in input-file-name.csv and input-file-name_summary.csv  
-   (test.csv and test_summary.csv in the above example)  
-- test.csv contains kmer count for kmers in individual sequences  
-- test_summary.csv contains kmer count for all unique kmers across all sequences in the sample test.fa
 
+By default mercat assumes that inputs provided is one of ['.fa', '.fna', '.ffn', '.fasta']
+
+> Example: To compute all 3-mers, run `mercat -i test.fa -k 3 -n 8 -c 10 -p`          
+ 
+ The above command:
+* Runs prodigal on `test.fa`, then runs mercat on the resulting protein file.            
+* Results are generally stored in input-file-name_{protein|nucleotide}.csv and input-file-name_{protein|nucleotide}_summary.csv  
+   * `test_protein.csv` and `test_protein_summary.csv` in this example  
+* `test_protein.csv` contains kmer frequency count, pI, Molecular Weight, and Hydrophobicity metrics for individual sequences.  
+* `test_protein_summary.csv` contains kmer frequency count, pI, Molecular Weight, and Hydrophobicity metrics for all unique kmers across all sequences in `test.fa`
+* `test_protein_diversity_metrics.txt` containing the alpha diversity metrics.
   
 Other usage examples:
 ---------------------
@@ -57,3 +59,10 @@ Other usage examples:
 
 * All the above examples can also be used with  `-f input-folder` instead of `-i input-file` option
   -  Example:  `mercat  -f /path/to/input-folder -k 3 -n 8 -c 10` --- Runs mercat on all inputs in the folder
+  
+  
+CONTACT
+-------
+
+Please send all queries to Ajay Panyala <[ajay.panyala@gmail.com](ajay.panyala@gmail.com)> and Richard White <[richard.white@pnnl.gov](richard.white@pnnl.gov)> 
+ or <[raw937@gmail.com](raw937@gmail.com)> 
