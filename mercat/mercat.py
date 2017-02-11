@@ -137,8 +137,8 @@ def check_args(ipfile,args,def_option,m_parser):
             m_parser.error("Input file provided should be one of the following formats: " + str(protein_file_ext))
 
     if args.q:
-        if given_ext != ".fq":
-            m_parser.error("Input file provided should be in .fq format")
+        if given_ext != ".fq" or given_ext != ".fastq":
+            m_parser.error("Input file provided should be in either .fq or .fastq format")
 
     if args.pro:
         if given_ext != ".faa":

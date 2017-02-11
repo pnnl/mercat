@@ -17,7 +17,7 @@ optional arguments:
   -n N        no of cores [default = all]
   -c C        minimum kmer count [default = 10]
   -pro        run mercat on protein input file specified as .faa 
-  -q          tell mercat that input file provided is a fastQ file.
+  -q          tell mercat that input file provided are raw nucleotide reads as [.fq, .fastq]
   -p          run prodigal on nucleotide assembled contigs. Must be one of ['.fa', '.fna', '.ffn', '.fasta']
   -t [T]      Trimmomatic options
 
@@ -34,9 +34,9 @@ optional arguments:
 
   
   Other usage examples:
-   mercat -i test.fq -k 3 -n 8 -c 10 -q
+   mercat -i test.fq -k 3 -n 8 -c 10 -q  
    
-   mercat -i test.fq -k 3 -n 8 -c 10 -q -t
+   mercat -i test.fq -k 3 -n 8 -c 10 -q -t  (Runs trimmomatic )
     
    mercat -i test.fq -k 3 -n 8 -c 10 -q -t 20
    
