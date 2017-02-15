@@ -1,4 +1,4 @@
-Mercat: Python code for versatile K-mer counting and diversity estimator for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
+Mercat: Python code for versatile k-mer counting and diversity estimation for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
 ================================================
 
 ![GitHub Logo](mercat.jpg)
