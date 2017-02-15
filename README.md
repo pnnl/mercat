@@ -60,7 +60,18 @@ Other usage examples:
 * All the above examples can also be used with  `-f input-folder` instead of `-i input-file` option
   -  Example:  `mercat  -f /path/to/input-folder -k 3 -n 8 -c 10` --- Runs mercat on all inputs in the folder
   
-  
+If you use MerCat please cite:
+Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Christer Jansson, Janet K Jansson. (2017).
+MerCat: a versatile counter and diversity estimator for data base independent property analysis obtained from 
+metagenomic and/or metatranscriptomic sequencing data. PeerJ Pre-Print.
+
+Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Christer Jansson, Janet K Jansson. (2017).
+MerCat: a versatile counter and estimator for data base independent property analysis obtained from 
+metagenomic and/or metatranscriptomic sequencing data. Bioinfomatics. Submitted
+
+Also, MerCat avaliable on the PNNL Portal Site https://store.pnnl.gov/content/mercat free and open source. 
+
+
 CONTACT
 -------
 
