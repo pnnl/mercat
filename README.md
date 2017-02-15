@@ -5,7 +5,7 @@ Mercat: Python code for Parallel k-mer counting
 
   
 Installing MerCat: 
- - Available via Anaconda: Enable BioConda repo and run `conda install mercat`  
+ - Will be Available soon via Anaconda: Enable BioConda repo and run `conda install mercat`  
  
 Usage:
 -----
