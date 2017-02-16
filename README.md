@@ -66,11 +66,11 @@ Citing Mercat
 If you are publishing results obtained using MerCat, please cite:
 
 Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
-MerCat: a versatile counter and diversity estimator for data base independent property analysis obtained from 
+MerCat: a versatile counter and diversity estimator for database independent property analysis obtained from 
 metagenomic and/or metatranscriptomic sequencing data. PeerJ Pre-Print.
 
 Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
-MerCat: a versatile counter and estimator for data base independent property analysis obtained from 
+MerCat: a versatile counter and estimator for database independent property analysis obtained from 
 metagenomic and/or metatranscriptomic sequencing data. Bioinfomatics. Submitted
 
 
