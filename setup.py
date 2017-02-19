@@ -5,9 +5,8 @@ setup(
     version='0.1',
     author='Ajay Panyala',
     author_email='ajay@example.com',
-    packages=find_packages()
-    #url='http://github.com/ap/mercat/',
-    #scripts=['bin/mercat']
-
-
+    url='https://github.com/pnnl/mercat',
+    packages=find_packages(),
+    include_package_data=True,
+    license: BSD
 )
