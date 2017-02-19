@@ -1,5 +1,3 @@
-import io
-from os.path import dirname, join
 from setuptools import setup, find_packages
 
 
