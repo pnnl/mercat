@@ -7,6 +7,5 @@ setup(
     author_email='ajay@example.com',
     url='https://github.com/pnnl/mercat',
     packages=find_packages(),
-    include_package_data=True,
-    license=BSD
+    include_package_data=True
 )
