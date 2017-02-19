@@ -23,8 +23,8 @@ from argparse import RawDescriptionHelpFormatter
 
 import dask.dataframe as dd
 
-from metrics import *
-from Chunker import mercat_chunker
+from .metrics import *
+from .Chunker import mercat_chunker
 
 
 def check_command(cmd):
@@ -137,7 +137,7 @@ def check_args(ipfile,args,def_option,m_parser):
             m_parser.error("Input file provided should be one of the following formats: " + str(protein_file_ext))
 
     if args.q:
-        if given_ext != ".fq" or given_ext != ".fastq":
+        if given_ext != ".fq" and given_ext != ".fastq":
             m_parser.error("Input file provided should be in either .fq or .fastq format")
 
     if args.pro:

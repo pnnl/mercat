@@ -4,16 +4,22 @@ package:
   version: "0.1"
 
 source:
-  git_url: https://github.com/pnnl/mercat.git
+   git_url: https://github.com/pnnl/mercat.git
 #  git_rev: 0.1
 
-build:
-  number: 0
+# build:
+#  number: 0.1
 
+build:
+  script: python setup.py install
+
+
+preserve_egg_dir: yes
 
 requirements:
   build:
     - python
+    - setuptools
     - scikit-bio
     - prodigal
     - trimmomatic
@@ -40,13 +46,10 @@ requirements:
     - psutil
     - joblib
 
-#test:
-  # Python imports
-  # imports:
-   # - mercat
 
-  #commands:
-  #  - $PREFIX/mercat.py -h
+test:
+  commands:
+    - mercat --help
 
 about:
   home:
@@ -57,3 +60,4 @@ about:
 extra:
   recipe-maintainers:
     - ajaypanyala
+
