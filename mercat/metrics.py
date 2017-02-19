@@ -74,7 +74,7 @@ def predict_isoelectric_point_ProMoST(seq):
         elif seq[-1] in promost_mid:
             QP2 = 1.0 / (1.0 + pow(10, (pH - promost_mid[seq[-1]][0])))
         else:
-            print seq[-1] + " not found!"
+            print(seq[-1] + " not found!")
 
             sys.exit(1)
 

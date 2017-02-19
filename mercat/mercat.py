@@ -258,7 +258,7 @@ def mercat_main():
                     prod_cmd = "prodigal -i %s -o %s -a %s -f gff -p meta -d %s" % (
                     trimfna, bif + ".gff", gen_protein_file, bif + "_nuc.ffn")
 
-                print prod_cmd
+                print(prod_cmd)
                 with open(os.devnull, 'w') as FNULL:
                     subprocess.call(prod_cmd, stdout=FNULL, stderr=FNULL, shell=True)
                 inputfile = gen_protein_file
@@ -329,13 +329,13 @@ def mercat_main():
             kmerlist_all_seq = dict()
 
             for d in results:
-                for k,v in d[0].items():
+                for k,v in list(d[0].items()):
                     if k in kmerlist:
                         kmerlist[k] += v
                     else: kmerlist[k] = v
 
             for d in results:
-                for seq,kdict in d[1].items():
+                for seq,kdict in list(d[1].items()):
                     #assert seq not in kmerlist_all_seq
                     kmerlist_all_seq[seq] = kdict#.copy()
 
