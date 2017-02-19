@@ -8,5 +8,5 @@ setup(
     url='https://github.com/pnnl/mercat',
     packages=find_packages(),
     include_package_data=True,
-    license: BSD
+    license=BSD
 )
