@@ -1,7 +1,6 @@
+#Modules available via pip
 setuptools
 scikit-bio
-prodigal
-trimmomatic
 dask
 setuptools
 pandas
@@ -10,3 +9,7 @@ humanize
 plotly
 psutil
 joblib
+#Not available via pip. Please install manually.
+#prodigal
+#trimmomatic
+
