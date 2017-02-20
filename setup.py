@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+required = open('dependencies.txt').read().splitlines()
+required = [l.strip() for l in required
+            if l.strip() and not l.strip().startswith('#')]
 
 setup(
     name='mercat',
