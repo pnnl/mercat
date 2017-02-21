@@ -1,7 +1,7 @@
 MerCat: python code for versatile k-mer counter and diversity estimator for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
 ================================================
 
-![GitHub Logo](Mercat_workflowpng.png)
+![GitHub Logo](mercat.jpg)
 
   
 Installing MerCat: 
