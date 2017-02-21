@@ -67,8 +67,8 @@ Citing Mercat
 -------------
 If you are publishing results obtained using MerCat, please cite:
 
-Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
-MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. PeerJ Pre-Print.
+White III RA, Panyala A, Glass K, Colby S, Glaesemann KR, Jansson C, Jansson JK. (2017) MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. PeerJ Preprints 5:e2825v1 https://doi.org/10.7287/peerj.preprints.2825v1
+
 
 Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
 MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. Bioinfomatics. Submitted
@@ -77,5 +77,5 @@ MerCat: a versatile k-mer counter and diversity estimator for database-independe
 CONTACT
 -------
 
-Please send all queries to Ajay Panyala <[ajay.panyala@gmail.com](ajay.panyala@gmail.com)> and Richard White <[richard.white@pnnl.gov](richard.white@pnnl.gov)> 
+Please send all queries to Ajay Panyala <[ajay.panyala@gmail.com](ajay.panyala@gmail.com)> and Richard Allen White III <[richard.white@pnnl.gov](richard.white@pnnl.gov)> 
  or <[raw937@gmail.com](raw937@gmail.com)> 
