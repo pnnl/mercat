@@ -1,4 +1,4 @@
-MerCat: python code for versatile k-mer counting and diversity estimation for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
+MerCat: python code for versatile k-mer counter and diversity estimation for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
 ================================================
 
 ![GitHub Logo](mercat.jpg)
@@ -68,12 +68,10 @@ Citing Mercat
 If you are publishing results obtained using MerCat, please cite:
 
 Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
-MerCat: a versatile counter and diversity estimator for database independent property analysis obtained from 
-metagenomic and/or metatranscriptomic sequencing data. PeerJ Pre-Print.
+MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. PeerJ Pre-Print.
 
 Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
-MerCat: a versatile counter and diversity estimator for database independent property analysis obtained from 
-metagenomic and/or metatranscriptomic sequencing data. Bioinfomatics. Submitted
+MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. Bioinfomatics. Submitted
 
 
 CONTACT
