@@ -56,7 +56,7 @@ Other usage examples:
 *   `mercat -i test.fna -k 3 -n 8 -c 10 -p`  
     Run prodigal on nucleotide input, generate a .faa protein file and run mercat on it
     
-*   `mercat -i test.fna -k 3 -n 8 -c 10 -pro`  
+*   `mercat -i test.faa -k 3 -n 8 -c 10 -pro`  
     Run mercat on a protein input (.faa)
 
 * All the above examples can also be used with  `-f input-folder` instead of `-i input-file` option
