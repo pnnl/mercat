@@ -27,6 +27,9 @@ from .metrics import *
 from .Chunker import mercat_chunker
 
 
+def name(i):
+    return str(i)
+
 def check_command(cmd):
     cmd1 = cmd
     if cmd == 'trimmomatic': cmd1 = 'trimmomatic -version'
@@ -443,6 +446,11 @@ def mercat_main():
         dfgb = df.groupby(kmerstring).sum()
         df10 = dfgb.nlargest(10,'Count').compute()
         dfsum = dfgb.sum(0).compute()
+
+        for tempfile in all_chunks_ipfile:
+            os.remove(tempfile)
+
+        dfgb.to_csv("./" + basename_ipfile + "_finalSummary*.csv", index_label=kmerstring, name_function=name)
 
 
 
