@@ -197,9 +197,9 @@ def mercat_main():
         os.makedirs(dir_runs)
 
         all_chunks_ipfile = []
-        if inputfile_size >= 104857600: #100MB
+        if inputfile_size >= (104857600/2): #100MB/2
             print("Large input file provided: Splitting it into smaller files...\n")
-            mercat_chunker(m_inputfile,dir_runs,"100M",">")
+            mercat_chunker(m_inputfile,dir_runs,"50M",">")
             os.chdir(dir_runs)
             all_chunks_ipfile = glob.glob("*")
         else:
@@ -447,12 +447,10 @@ def mercat_main():
         df10 = dfgb.nlargest(10,'Count').compute()
         dfsum = dfgb.sum(0).compute()
 
-        for tempfile in all_chunks_ipfile:
-            os.remove(tempfile)
-
         dfgb.to_csv("./" + basename_ipfile + "_finalSummary*.csv", index_label=kmerstring, name_function=name)
 
-
+        for tempfile in all_chunks_ipfile:
+            os.remove(tempfile)
 
         if mflag_protein:
             df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']]/num_chunks
