@@ -302,6 +302,7 @@ def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring,total_freq_count):
     index_vals = res_df.index.values
 
     btraces = []
+    topk10 = min(len(index_vals),10)
     for i in range(0,10):
         fr = res_df.loc[index_vals[i], 'Count'],
         trace1 = go.Bar(

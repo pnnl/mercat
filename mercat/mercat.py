@@ -111,22 +111,22 @@ def get_all_substrings(input_string,kmer):
     length = len(input_string)
     return [input_string[i:i + kmer] for i in range(length-kmer+1)]
 
-def calculateKmerCount(seq,cseq, prune_kmer,kmer):
+def calculateKmerCount(cseq,kmer): ###(seq,cseq, prune_kmer,kmer):
     kmerlist = dict()
-    kmerlist_all_seq = dict()
+    ###kmerlist_all_seq = dict()
     #cseq = sequences[seq] #Get current sequence
     sslist = get_all_substrings(cseq,kmer) # get all substrings of current sequence
-    kmerlist_all_seq[seq] = dict() #kmer count for each substring of current sequence
-    #print sslist
+    ###kmerlist_all_seq[seq] = dict() #kmer count for each substring of current sequence
+
     for ss in sslist:
         if ss not in kmerlist: kmerlist[ss] = 0 #global kmer count for substring ss
         count = len(re.findall(r'(?=(%s))' % re.escape(ss), cseq))
         kmerlist[ss] += count #global kmer count for substring ss
-        if count >= prune_kmer:
-            #if ss not in kmerlist_all_seq[seq]: kmerlist_all_seq[seq][ss] = 0  # kmer count for substring in current sequence
-            kmerlist_all_seq[seq][ss] = count #kmer count for substring in current sequence
+        ### if count >= prune_kmer:
+        ###     #if ss not in kmerlist_all_seq[seq]: kmerlist_all_seq[seq][ss] = 0  # kmer count for substring in current sequence
+        ###     kmerlist_all_seq[seq][ss] = count #kmer count for substring in current sequence
 
-    return [kmerlist,kmerlist_all_seq]
+    return kmerlist #[kmerlist,kmerlist_all_seq]
 
 
 def check_args(ipfile,args,def_option,m_parser):
@@ -197,11 +197,13 @@ def mercat_main():
         os.makedirs(dir_runs)
 
         all_chunks_ipfile = []
+        is_chunked = False
         if inputfile_size >= (104857600/2): #100MB/2
             print("Large input file provided: Splitting it into smaller files...\n")
             mercat_chunker(m_inputfile,dir_runs,"50M",">")
             os.chdir(dir_runs)
             all_chunks_ipfile = glob.glob("*")
+            is_chunked=True
         else:
             os.chdir(dir_runs)
             all_chunks_ipfile.append(m_inputfile)
@@ -325,22 +327,25 @@ def mercat_main():
             print("Number of sequences in " + inputfile + " = "+ str(humanize.intword(len(sequences))))
 
 
+            # results = Parallel(n_jobs=num_cores)(
+            #     delayed(calculateKmerCount)(seq, sequences[seq], prune_kmer, kmer) for seq in sequences)
             results = Parallel(n_jobs=num_cores)(
-                delayed(calculateKmerCount)(seq, sequences[seq], prune_kmer, kmer) for seq in sequences)
+                delayed(calculateKmerCount)(sequences[seq], kmer) for seq in sequences)
+
 
             kmerlist = dict()
-            kmerlist_all_seq = dict()
+            #kmerlist_all_seq = dict()
 
             for d in results:
-                for k,v in list(d[0].items()):
+                for k,v in list(d.items()):
                     if k in kmerlist:
                         kmerlist[k] += v
                     else: kmerlist[k] = v
 
-            for d in results:
-                for seq,kdict in list(d[1].items()):
-                    #assert seq not in kmerlist_all_seq
-                    kmerlist_all_seq[seq] = kdict#.copy()
+            # for d in results:
+            #     for seq,kdict in list(d[1].items()):
+            #         #assert seq not in kmerlist_all_seq
+            #         kmerlist_all_seq[seq] = kdict#.copy()
 
             print("Time to compute " + kmerstring +  ": " + str(round(timeit.default_timer() - start_time,2)) + " secs")
 
@@ -444,8 +449,9 @@ def mercat_main():
 
         dfgb.to_csv("./" + basename_ipfile + "_finalSummary*.csv", index_label=kmerstring, name_function=name)
 
-        for tempfile in all_chunks_ipfile:
-            os.remove(tempfile)
+        if is_chunked:
+            for tempfile in all_chunks_ipfile:
+                os.remove(tempfile)
 
         if mflag_protein:
             df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']]/num_chunks
