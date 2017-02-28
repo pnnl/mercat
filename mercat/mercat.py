@@ -198,9 +198,9 @@ def mercat_main():
 
         all_chunks_ipfile = []
         is_chunked = False
-        if inputfile_size >= (104857600/2): #100MB/2
+        if inputfile_size >= (104857600): #100MB
             print("Large input file provided: Splitting it into smaller files...\n")
-            mercat_chunker(m_inputfile,dir_runs,"50M",">")
+            mercat_chunker(m_inputfile,dir_runs,"100M",">")
             os.chdir(dir_runs)
             all_chunks_ipfile = glob.glob("*")
             is_chunked=True
@@ -212,6 +212,7 @@ def mercat_main():
         #sys.exit(1)
 
         kmerstring = str(kmer) + "-mers"
+        splitSummaryFiles = []
 
         for inputfile in all_chunks_ipfile:
 
@@ -379,6 +380,8 @@ def mercat_main():
 
                 df.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
 
+            splitSummaryFiles.append(bif + "_summary.csv")
+
             # dfcol = significant_kmers
             #
             #
@@ -442,16 +445,12 @@ def mercat_main():
 
 
         num_chunks = len(all_chunks_ipfile)
-        df = dd.read_csv(basename_ipfile+"*_summary.csv")
+        df = dd.read_csv(splitSummaryFiles)
         dfgb = df.groupby(kmerstring).sum()
         df10 = dfgb.nlargest(10,'Count').compute()
         dfsum = dfgb.sum(0).compute()
 
         dfgb.to_csv("./" + basename_ipfile + "_finalSummary*.csv", index_label=kmerstring, name_function=name)
-
-        if is_chunked:
-            for tempfile in all_chunks_ipfile:
-                os.remove(tempfile)
 
         if mflag_protein:
             df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']]/num_chunks
@@ -469,6 +468,11 @@ def mercat_main():
         all_counts = dfgb.Count.values.compute().astype(int)
         mercat_compute_alpha_beta_diversity(all_counts,basename_ipfile)
 
+        if is_chunked:
+            for tempfile in all_chunks_ipfile:
+                os.remove(tempfile)
+            for sf in splitSummaryFiles:
+                os.remove(sf)
 
 if __name__ == "__main__":
     mercat_main()
