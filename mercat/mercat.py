@@ -302,7 +302,7 @@ def mercat_main():
                             line = line.replace("*","")
                             seq += line
 
-                    assert sname and seq
+                    #assert sname and seq
                     sequences[sname] = seq
 
                 else: #process fastq file
@@ -361,6 +361,8 @@ def mercat_main():
                     df.set_value(k,"PI", predict_isoelectric_point_ProMoST(k))
                     df.set_value(k, "MW", calculate_MW(k))
                     df.set_value(k, "Hydro", calculate_hydro(k))
+
+                df.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
             else:
                 df = pd.DataFrame(0, index=significant_kmers, columns=['Count',"GC_Percent","AT_Percent"])
                 for k in significant_kmers:
@@ -370,76 +372,69 @@ def mercat_main():
                     df.set_value(k, "GC_Percent", round(((c_kmer.count("G")+c_kmer.count("C")) / len_cseq) * 100.0))
                     df.set_value(k, "AT_Percent", round(((c_kmer.count("A")+c_kmer.count("T")) / len_cseq) * 100.0))
 
-            # df_summ_sort = df.sort_values('Count', ascending=False)
-            # df_summ_sort.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
-            df.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
+                df.to_csv(bif + "_summary.csv", index_label=kmerstring, index=True)
 
-            dfcol = significant_kmers
-
-
-            if not mflag_protein:
-                dfcol.extend(["length","GC_Percent","AT_Percent"])
-
-                df = pd.DataFrame(0,index=list(sequences.keys()),columns=dfcol)
-
-                for seq in sequences:
-                    cseq = sequences[seq]
-                    len_cseq = float(len(cseq))
-                    df.set_value(seq, "length", int(len_cseq))
-                    df.set_value(seq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
-                    df.set_value(seq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
-                    for ss in kmerlist_all_seq[seq]:
-                        df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
-
-                    #df = df.loc[:, df.max() >= prune_kmer]
-                    df1 = df.ix[:,['length','GC_Percent','AT_Percent']]
-                    del df['length']
-                    del df['GC_Percent']
-                    del df['AT_Percent']
-                    df = df.loc[:, df.max() >= prune_kmer]
-                    df.loc[:, 'length'] = df1.ix[:,'length']
-                    df.loc[:, 'GC_Percent'] = df1.ix[:,'GC_Percent']
-                    df.loc[:, 'AT_Percent'] = df1.ix[:,'AT_Percent']
-
-
-            else:
-
-                dfcol.extend(["length", "PI", "MW","Hydro"])
-
-                df = pd.DataFrame(0, index=list(sequences.keys()), columns=dfcol)
-
-                for seq in sequences:
-                    cseq = sequences[seq]
-                    cseq=cseq.replace('*','')
-                    len_cseq = float(len(cseq))
-                    df.set_value(seq, "length", int(len_cseq))
-                    df.set_value(seq, "PI", predict_isoelectric_point_ProMoST(cseq))
-                    df.set_value(seq, "MW", calculate_MW(cseq))
-                    df.set_value(seq, "Hydro", calculate_hydro(cseq))
-                    for ss in kmerlist_all_seq[seq]:
-                        df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
-
-                    #df = df.loc[:,df.max() >= prune_kmer]
-                    df1 = df.ix[:,['length','PI','MW','Hydro']]
-                    del df['length']
-                    del df['PI']
-                    del df['MW']
-                    del df['Hydro']
-                    df = df.loc[:, df.max() >= prune_kmer]
-                    df.loc[:, 'length'] = df1.ix[:,'length']
-                    df.loc[:, 'PI'] = df1.ix[:,'PI']
-                    df.loc[:, 'MW'] = df1.ix[:,'MW']
-                    df.loc[:, 'Hydro'] = df1.ix[:, 'Hydro']
-
-            df.to_csv(bif+".csv",index_label='Sequence',index=True)
+            # dfcol = significant_kmers
+            #
+            #
+            # if not mflag_protein:
+            #     dfcol.extend(["length","GC_Percent","AT_Percent"])
+            #
+            #     df = pd.DataFrame(0,index=list(sequences.keys()),columns=dfcol)
+            #
+            #     for seq in sequences:
+            #         cseq = sequences[seq]
+            #         len_cseq = float(len(cseq))
+            #         df.set_value(seq, "length", int(len_cseq))
+            #         df.set_value(seq, "GC_Percent", round(((cseq.count("G")+cseq.count("C")) / len_cseq) * 100.0))
+            #         df.set_value(seq, "AT_Percent", round(((cseq.count("A")+cseq.count("T")) / len_cseq) * 100.0))
+            #         for ss in kmerlist_all_seq[seq]:
+            #             df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
+            #
+            #         #df = df.loc[:, df.max() >= prune_kmer]
+            #         df1 = df.ix[:,['length','GC_Percent','AT_Percent']]
+            #         del df['length']
+            #         del df['GC_Percent']
+            #         del df['AT_Percent']
+            #         df = df.loc[:, df.max() >= prune_kmer]
+            #         df.loc[:, 'length'] = df1.ix[:,'length']
+            #         df.loc[:, 'GC_Percent'] = df1.ix[:,'GC_Percent']
+            #         df.loc[:, 'AT_Percent'] = df1.ix[:,'AT_Percent']
+            #
+            #
+            # else:
+            #
+            #     dfcol.extend(["length", "PI", "MW","Hydro"])
+            #
+            #     df = pd.DataFrame(0, index=list(sequences.keys()), columns=dfcol)
+            #
+            #     for seq in sequences:
+            #         cseq = sequences[seq]
+            #         cseq=cseq.replace('*','')
+            #         len_cseq = float(len(cseq))
+            #         df.set_value(seq, "length", int(len_cseq))
+            #         df.set_value(seq, "PI", predict_isoelectric_point_ProMoST(cseq))
+            #         df.set_value(seq, "MW", calculate_MW(cseq))
+            #         df.set_value(seq, "Hydro", calculate_hydro(cseq))
+            #         for ss in kmerlist_all_seq[seq]:
+            #             df.set_value(seq, ss, kmerlist_all_seq[seq][ss])
+            #
+            #         #df = df.loc[:,df.max() >= prune_kmer]
+            #         df1 = df.ix[:,['length','PI','MW','Hydro']]
+            #         del df['length']
+            #         del df['PI']
+            #         del df['MW']
+            #         del df['Hydro']
+            #         df = df.loc[:, df.max() >= prune_kmer]
+            #         df.loc[:, 'length'] = df1.ix[:,'length']
+            #         df.loc[:, 'PI'] = df1.ix[:,'PI']
+            #         df.loc[:, 'MW'] = df1.ix[:,'MW']
+            #         df.loc[:, 'Hydro'] = df1.ix[:, 'Hydro']
+            #
+            # df.to_csv(bif+".csv",index_label='Sequence',index=True)
 
             print("Total time: " + str(round(timeit.default_timer() - start_time,2)) + " secs")
 
-            #Debug
-            # sname = '515620.EUBELI_01521'
-            # print df.loc[sname,"length"]
-            # print df.loc[sname,"GC"]
-            # print df.loc[sname,"AT"]
 
         num_chunks = len(all_chunks_ipfile)
         df = dd.read_csv(basename_ipfile+"*_summary.csv")
