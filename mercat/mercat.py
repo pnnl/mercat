@@ -66,6 +66,7 @@ def parseargs(argv=None):
     parser.add_argument('-q', action='store_true', help='fastQ input file')
     parser.add_argument('-p', action='store_true', help='run prodigal on fasta file')
     parser.add_argument('-t',type=int,nargs='?',const=30,required=False,help='Trimmomatic options')
+    parser.add_argument('-s', type=int, nargs='?', const=100, required=False, help='Split into x MB files. Default = 100MB')
 
     # Process arguments
     args = parser.parse_args()
@@ -160,6 +161,7 @@ def mercat_main():
     mflag_prodigal = __args__.p
     mflag_trimmomatic = __args__.t
     mflag_protein = __args__.pro
+    mfile_size_split = long(__args__.s)
 
     np_string = "nucleotide"
     if mflag_protein or mflag_prodigal: np_string = "protein"
@@ -198,9 +200,9 @@ def mercat_main():
 
         all_chunks_ipfile = []
         is_chunked = False
-        if inputfile_size >= (104857600): #100MB
+        if inputfile_size >= (mfile_size_split*1024*1024): #100MB
             print("Large input file provided: Splitting it into smaller files...\n")
-            mercat_chunker(m_inputfile,dir_runs,"100M",">")
+            mercat_chunker(m_inputfile,dir_runs,str(mfile_size_split)+"M",">")
             os.chdir(dir_runs)
             all_chunks_ipfile = glob.glob("*")
             is_chunked=True
