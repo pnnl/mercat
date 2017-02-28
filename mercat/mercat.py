@@ -161,7 +161,10 @@ def mercat_main():
     mflag_prodigal = __args__.p
     mflag_trimmomatic = __args__.t
     mflag_protein = __args__.pro
-    mfile_size_split = long(__args__.s)
+    mfile_size_split = __args__.s
+
+    if not mfile_size_split:
+        mfile_size_split = 100
 
     np_string = "nucleotide"
     if mflag_protein or mflag_prodigal: np_string = "protein"
