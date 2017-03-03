@@ -20,6 +20,7 @@ Usage:
  * -q          tell mercat that input file provided are raw nucleotide reads as [.fq, .fastq]
  * -p          run prodigal on nucleotide assembled contigs. Must be one of ['.fa', '.fna', '.ffn', '.fasta']
  * -t [T]      Trimmomatic options
+ * -s          Data split size for large files (default is 100 Mb file size) 
  * -h, --help  show this help message
 
 
@@ -61,6 +62,9 @@ Other usage examples:
 
 * All the above examples can also be used with  `-f input-folder` instead of `-i input-file` option
   -  Example:  `mercat  -f /path/to/input-folder -k 3 -n 8 -c 10` --- Runs mercat on all inputs in the folder
+  
+* To save working memory (RAM) on low RAM computers or >2 GB files use '-s option' to split/chunk the file 
+  - Example: `mercat -i test.fna -k 3 -n 8 -c 10 -s 50` --Runs mercat in nucleotide mode splitting file into 50 MB pieces 
   
   
 Citing Mercat
