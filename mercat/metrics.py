@@ -174,6 +174,7 @@ def calculate_hydro(seq):
 
 from skbio.diversity import alpha as skbio_alpha
 from skbio.diversity import beta as skbio_beta
+import itertools
 
 def mercat_compute_alpha_beta_diversity(counts,bif):
 
@@ -301,37 +302,62 @@ def mercat_stackedbar_plots(inp_folder,top10_all_samples,xlab,kmerstring,total_f
     all_samples = top10_all_samples.keys()
     btraces = []
     kmer_percent = dict()
+
+    kmernames = dict()
+
     for bif in top10_all_samples:
         res_df,_ = top10_all_samples[bif]
         index_vals = res_df.index.values
+        kmernames[bif]=index_vals
         #topk10 = min(len(index_vals), 10)
-
         #If a small sample has less than 10kmers, ignore it
         if len(index_vals) < 10: continue
 
         kmer_percent[bif] = []
         for i in range(0, topk10):
             fr = res_df.loc[index_vals[i], 'Count']
-            kmer_percent[bif].append(float(fr) * 1.0 / total_freq_count)
-
+            fr = round(float(fr) * 100.0 / total_freq_count,1)
+            kmer_percent[bif].append(fr)
 
     ylist = dict()
     all_kmer_percents = (kmer_percent.values())
-    for i in range(0,topk10):
-        ylist[i] = [x[i] for x in all_kmer_percents]
+    ylist[0] = list(itertools.repeat(0,len(all_samples)))
+    for i in range(1,topk10+1):
+        ylist[i] = [x[i-1] for x in all_kmer_percents]
+
+    all_annotations = []
 
     for s in ylist:
+        if s==0: continue
         trace1 = go.Bar(
             x=all_samples,
             y=ylist[s],
-            name="kmer" + str(int(s)+1)
+            name="kmer" + str(s)
         )
         btraces.append(trace1)
+
+        annotations = []
+        for index, (xi, yi) in enumerate(zip(all_samples, ylist[s])):
+            prevy = 0
+            for z in range(0, s):
+                prevy += ylist[z][index]
+
+            annotations.append(
+                 dict(x=xi, y=yi+prevy,
+                 text=str(kmernames[xi][s-1]+": " + str(yi)+"%"),
+                 xanchor='center',
+                 yanchor='bottom',
+                 showarrow=False,
+                 )
+            )
+
+        all_annotations.append(annotations)
 
 
     data = go.Data(btraces)
     layout = go.Layout(
         barmode='stack',
+        annotations=list(itertools.chain.from_iterable(all_annotations)),
         legend=dict(
             font=dict(
                 # family='sans-serif',
@@ -348,7 +374,7 @@ def mercat_stackedbar_plots(inp_folder,top10_all_samples,xlab,kmerstring,total_f
             # autorange=True,
             fixedrange=False,
             title="Samples",
-            # type='linear',
+            #type='linear',
             # showgrid=False,
             ticks='inside',
             ticklen=8,
@@ -374,7 +400,7 @@ def mercat_stackedbar_plots(inp_folder,top10_all_samples,xlab,kmerstring,total_f
             gridwidth=2
         ),
         yaxis=dict(
-            #type='log',
+            #type='linear',
             autorange=True,
             fixedrange=False,
             ticks='inside',
