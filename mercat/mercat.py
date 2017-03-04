@@ -163,6 +163,8 @@ def mercat_main():
     mflag_protein = __args__.pro
     mfile_size_split = __args__.s
 
+    kmerstring = str(kmer) + "-mers"
+
     if not mfile_size_split:
         mfile_size_split = 100
 
@@ -182,9 +184,11 @@ def mercat_main():
                 all_ipfiles.append(mip)
 
     else:
-        m_inputfolder = os.getcwd()
+        #m_inputfolder = os.getcwd()
+        m_inputfolder = os.path.dirname(os.path.abspath(m_inputfile))
         all_ipfiles.append(os.path.abspath(m_inputfile))
 
+    top10_all_samples = dict()
     for m_inputfile in all_ipfiles:
 
         os.chdir(m_inputfolder)
@@ -192,10 +196,11 @@ def mercat_main():
 
         m_inputfile = os.path.abspath(m_inputfile)
 
+        sample_name = os.path.splitext(os.path.basename(m_inputfile))[0]
         basename_ipfile = os.path.splitext(os.path.basename(m_inputfile))[0] + "_" + np_string
 
         inputfile_size = os.stat(m_inputfile).st_size
-        dir_runs = basename_ipfile + "_run"
+        dir_runs = "mercat_results/" + basename_ipfile + "_run"
 
         if os.path.exists(dir_runs):
             shutil.rmtree(dir_runs)
@@ -216,7 +221,7 @@ def mercat_main():
         #print all_chunks_ipfile
         #sys.exit(1)
 
-        kmerstring = str(kmer) + "-mers"
+
         splitSummaryFiles = []
 
         for inputfile in all_chunks_ipfile:
@@ -458,17 +463,11 @@ def mercat_main():
         dfgb.to_csv("./" + basename_ipfile + "_finalSummary*.csv", index_label=kmerstring, name_function=name)
 
         if mflag_protein:
-            df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']]/num_chunks
-            mercat_scatter_plots(basename_ipfile,'PI',df10,kmerstring)
-            mercat_scatter_plots(basename_ipfile,'MW', df10, kmerstring)
-            mercat_scatter_plots(basename_ipfile,'Hydro', df10, kmerstring)
-            mercat_stackedbar_plots(basename_ipfile, 'Count', df10, kmerstring, dfsum.Count)
+            df10[['PI', 'MW', 'Hydro']] = df10[['PI', 'MW', 'Hydro']] / num_chunks
         else:
-            df10[['GC_Percent', 'AT_Percent']] = df10[['GC_Percent','AT_Percent']]/num_chunks
-            mercat_scatter_plots(basename_ipfile,'GC_Percent',df10,kmerstring)
-            mercat_scatter_plots(basename_ipfile,'AT_Percent', df10, kmerstring)
-            mercat_stackedbar_plots(basename_ipfile, 'Count', df10, kmerstring, dfsum.Count)
+            df10[['GC_Percent', 'AT_Percent']] = df10[['GC_Percent', 'AT_Percent']] / num_chunks
 
+        top10_all_samples[sample_name] = [df10,dfsum.Count]
 
         all_counts = dfgb.Count.values.compute().astype(int)
         mercat_compute_alpha_beta_diversity(all_counts,basename_ipfile)
@@ -478,6 +477,28 @@ def mercat_main():
                 os.remove(tempfile)
             for sf in splitSummaryFiles:
                 os.remove(sf)
+
+    plots_dir = m_inputfolder+"/mercat_results/plots"
+    if os.path.exists(plots_dir):
+        shutil.rmtree(plots_dir)
+    os.makedirs(plots_dir)
+    os.chdir(plots_dir)
+
+    for basename_ipfile in top10_all_samples:
+        df10,sum_kmer_count = top10_all_samples[basename_ipfile]
+        if mflag_protein:
+            mercat_scatter_plots(basename_ipfile, 'PI', df10, kmerstring)
+            mercat_scatter_plots(basename_ipfile, 'MW', df10, kmerstring)
+            mercat_scatter_plots(basename_ipfile, 'Hydro', df10, kmerstring)
+        else:
+            mercat_scatter_plots(basename_ipfile, 'GC_Percent', df10, kmerstring)
+            mercat_scatter_plots(basename_ipfile, 'AT_Percent', df10, kmerstring)
+
+    sbname = os.path.basename(m_inputfolder)
+    if len(all_ipfiles) == 1: sbname = os.path.basename(all_ipfiles[0])
+    mercat_stackedbar_plots(sbname,top10_all_samples, 'Count', kmerstring, sum_kmer_count)
+
+
 
 if __name__ == "__main__":
     mercat_main()

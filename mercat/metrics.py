@@ -291,26 +291,43 @@ def mercat_scatter_plots(bif,xlab,res_df,kmerstring):
 
 
 
-def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring,total_freq_count):
-
+def mercat_stackedbar_plots(inp_folder,top10_all_samples,xlab,kmerstring,total_freq_count):
     axis_title_font_size = 20
     axis_tick_label_size = 18
     legend_font_size = 14
     marker_size = 10
 
-    #total_freq_count = res_df[xlab].sum()
-    index_vals = res_df.index.values
-
+    topk10 = 10
+    all_samples = top10_all_samples.keys()
     btraces = []
-    topk10 = min(len(index_vals),10)
+    kmer_percent = dict()
+    for bif in top10_all_samples:
+        res_df,_ = top10_all_samples[bif]
+        index_vals = res_df.index.values
+        #topk10 = min(len(index_vals), 10)
+
+        #If a small sample has less than 10kmers, ignore it
+        if len(index_vals) < 10: continue
+
+        kmer_percent[bif] = []
+        for i in range(0, topk10):
+            fr = res_df.loc[index_vals[i], 'Count']
+            kmer_percent[bif].append(float(fr) * 1.0 / total_freq_count)
+
+
+    ylist = dict()
+    all_kmer_percents = (kmer_percent.values())
     for i in range(0,topk10):
-        fr = res_df.loc[index_vals[i], 'Count'],
+        ylist[i] = [x[i] for x in all_kmer_percents]
+
+    for s in ylist:
         trace1 = go.Bar(
-            x=[bif],
-            y=[(fr[0]*1.0/total_freq_count)],
-            name = index_vals[i]
+            x=all_samples,
+            y=ylist[s],
+            name="kmer" + str(int(s)+1)
         )
         btraces.append(trace1)
+
 
     data = go.Data(btraces)
     layout = go.Layout(
@@ -390,4 +407,4 @@ def mercat_stackedbar_plots(bif,xlab,res_df,kmerstring,total_freq_count):
     )
 
     fig = go.Figure(data=data, layout=layout)
-    plot(fig, filename=bif + "_barchart_"+xlab+".html", auto_open=False)
+    plot(fig, filename=inp_folder + "_barchart_"+xlab+".html", auto_open=False)
