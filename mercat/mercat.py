@@ -485,7 +485,7 @@ def mercat_main():
     os.chdir(plots_dir)
 
     for basename_ipfile in top10_all_samples:
-        df10,sum_kmer_count = top10_all_samples[basename_ipfile]
+        df10,_ = top10_all_samples[basename_ipfile]
         if mflag_protein:
             mercat_scatter_plots(basename_ipfile, 'PI', df10, kmerstring)
             mercat_scatter_plots(basename_ipfile, 'MW', df10, kmerstring)
@@ -496,7 +496,7 @@ def mercat_main():
 
     sbname = os.path.basename(m_inputfolder)
     if len(all_ipfiles) == 1: sbname = os.path.basename(all_ipfiles[0])
-    mercat_stackedbar_plots(sbname,top10_all_samples, 'Count', kmerstring, sum_kmer_count)
+    mercat_stackedbar_plots(sbname,top10_all_samples, 'Count', kmerstring)
 
 
 
