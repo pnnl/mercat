@@ -299,7 +299,7 @@ def mercat_stackedbar_plots(inp_folder,top10_all_samples,xlab,kmerstring):
     marker_size = 10
 
     topk10 = 10
-    all_samples = top10_all_samples.keys()
+    all_samples = list(top10_all_samples.keys())
     btraces = []
     kmer_percent = dict()
 
@@ -320,7 +320,7 @@ def mercat_stackedbar_plots(inp_folder,top10_all_samples,xlab,kmerstring):
             kmer_percent[bif].append(fr)
 
     ylist = dict()
-    all_kmer_percents = (kmer_percent.values())
+    all_kmer_percents = (list(kmer_percent.values()))
     ylist[0] = list(itertools.repeat(0,len(all_samples)))
     for i in range(1,topk10+1):
         ylist[i] = [x[i-1] for x in all_kmer_percents]
