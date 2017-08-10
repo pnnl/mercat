@@ -32,10 +32,14 @@ By default mercat assumes that inputs provided is one of ['.fa', '.fna', '.ffn',
 * Runs prodigal on `test.fa`, then runs mercat on the resulting protein file.            
 * Results are generally stored in input-file-name_{protein|nucleotide}.csv and input-file-name_{protein|nucleotide}_summary.csv  
    * `test_protein.csv` and `test_protein_summary.csv` in this example  
-* `test_protein.csv` contains kmer frequency count, pI, Molecular Weight, and Hydrophobicity metrics for individual sequences.  
 * `test_protein_summary.csv` contains kmer frequency count, pI, Molecular Weight, and Hydrophobicity metrics for all unique kmers across all sequences in `test.fa`
 * `test_protein_diversity_metrics.txt` containing the alpha diversity metrics.
-  
+
+* `test_protein.csv` contains kmer frequency count, pI, Molecular Weight, and Hydrophobicity metrics for individual sequences. 
+  > NOTE: We disabled the code that generates this file since computing k-mer counts for individual 
+sequences was getting very expensive in terms of time & memory usage for large input files.
+
+
 Other usage examples:
 ---------------------
 
