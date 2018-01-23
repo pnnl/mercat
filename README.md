@@ -85,5 +85,4 @@ MerCat: a versatile k-mer counter and diversity estimator for database-independe
 CONTACT
 -------
 
-Please send all queries to Ajay Panyala <[ajay.panyala@gmail.com](ajay.panyala@gmail.com)> and Richard Allen White III <[richard.white@pnnl.gov](richard.white@pnnl.gov)> 
- or <[raw937@gmail.com](raw937@gmail.com)> 
+Please send all queries to Ajay Panyala <[ajay.panyala@gmail.com](ajay.panyala@gmail.com)> and Richard Allen White III  <[raw937@gmail.com](raw937@gmail.com)> 
