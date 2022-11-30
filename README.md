@@ -1,5 +1,5 @@
-# This version of MerCat Depreciated please use the new updated version - MerCat2
-https://github.com/raw-lab/mercat2
+# This version of MerCat Depreciated please use the new updated version
+# https://github.com/raw-lab/mercat2
 
 ====================================================
 
