@@ -1,4 +1,8 @@
-MerCat: python code for versatile k-mer counter and diversity estimator for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
+This version of MerCat Depreciated please use the new updated version - MerCat2
+https://github.com/raw-lab/mercat2
+
+
+** MerCat: python code for versatile k-mer counter and diversity estimator for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
 ================================================
 
 ![GitHub Logo](mercat_workflow.jpg)
@@ -78,11 +82,8 @@ If you are publishing results obtained using MerCat, please cite:
 White III RA, Panyala A, Glass K, Colby S, Glaesemann KR, Jansson C, Jansson JK. (2017) MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. PeerJ Preprints 5:e2825v1 https://doi.org/10.7287/peerj.preprints.2825v1
 
 
-Richard Allen White III, Ajay Panyala, Kevin Glass, Sean Colby, Kurt R Glaesemann, Christer Jansson, Janet K Jansson. (2017).
-MerCat: a versatile k-mer counter and diversity estimator for database-independent property analysis obtained from metagenomic and/or metatranscriptomic sequencing data. Bioinfomatics. Submitted
-
 
 CONTACT
 -------
 
-Please send all queries to Ajay Panyala <[ajay.panyala@gmail.com](ajay.panyala@gmail.com)> and Richard Allen White III  <[raw937@gmail.com](raw937@gmail.com)> 
+Please send all queries to Richard Allen White III  <[rwhit101@uncc.edu](rwhit101@uncc.edu)> or <[raw937@gmail.com](raw937@gmail.com)> 
