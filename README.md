@@ -1,7 +1,7 @@
 # This version of MerCat Depreciated please use the new updated version
 # https://github.com/raw-lab/mercat2
 
-==========================================================================================================================================================
+===============================================================================================================
 
 ###### MerCat: python code for versatile k-mer counter and diversity estimator for database independent property analysis (DIPA)  obtained from metagenomic and/or metatranscriptomic sequencing data
 
